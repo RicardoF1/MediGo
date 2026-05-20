@@ -41,10 +41,10 @@ src/app/
     ├── paciente/                   # Dashboard del Paciente, Reserva de Citas e Historial
     ├── medico/                     # Agenda Médica, Gestión de Turnos y Registro de Diagnósticos
     └── admin/                      # Centro de Control, Gestión de Usuarios y Reportes
+```
+---
 
-
-
-""## ⚙️ Requisitos del Sistema y Configuración
+## ⚙️ Requisitos del Sistema y Configuración
 
 Siga los pasos a continuación para clonar, instalar y desplegar el entorno de desarrollo localmente.
 
