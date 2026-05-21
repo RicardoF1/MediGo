@@ -7,7 +7,7 @@ export const routes: Routes = [
   },
   {
     path: 'paciente',
-    loadComponent: () => import('./features/paciente/dashboard-paciente/dashboard-paciente.component').then(m => m.DashboardPacienteComponent)
+    loadComponent: () => import('./features/paciente/pages/dashboard-paciente/dashboard-paciente.component').then(m => m.DashboardPacienteComponent)
   },
   {
     path: '',
