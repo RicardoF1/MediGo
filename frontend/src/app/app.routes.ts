@@ -7,7 +7,8 @@ export const routes: Routes = [
   },
   {
     path: 'paciente',
-    loadComponent: () => import('./features/paciente/pages/dashboard-paciente/dashboard-paciente.component').then(m => m.DashboardPacienteComponent)
+    // Carga de forma perezosa todo el submódulo del paciente con su propia estructura interna
+    loadChildren: () => import('./features/paciente/paciente.routes').then(m => m.PACIENTE_ROUTES)
   },
   {
     path: '',

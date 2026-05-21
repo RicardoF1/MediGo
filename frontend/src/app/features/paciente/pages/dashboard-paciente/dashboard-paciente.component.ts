@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-paciente',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="container">
       <div class="row mb-4">
@@ -28,7 +29,7 @@ import { CommonModule } from '@angular/common';
               </div>
               <h5 class="card-title fw-bold text-dark">Nueva Cita Médica</h5>
               <p class="card-text text-muted flex-grow-1">Reserve un turno con nuestros especialistas médicos en menos de tres pasos lógicos.</p>
-              <button class="btn btn-primary w-100 mt-3 fw-semibold">Reservar Turno</button>
+              <button [routerLink]="['/paciente/reservar']" class="btn btn-primary w-100 mt-3 fw-semibold">Reservar Turno</button>
             </div>
           </div>
         </div>
