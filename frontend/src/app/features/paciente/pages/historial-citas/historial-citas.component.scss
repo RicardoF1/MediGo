@@ -1,0 +1,4 @@
+.fs-xs { font-size: 0.75rem; }
+.bg-light-custom { background-color: #f8fafc; border: 1px solid #e2e8f0; }
+.animate-fade-in { animation: fadeIn 0.25s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }

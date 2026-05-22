@@ -33,7 +33,7 @@
           </div>
           <h5 class="card-title fw-bold text-dark">Historial de Consultas</h5>
           <p class="card-text text-muted flex-grow-1">Revise de manera detallada las recetas emitidas y sus antecedentes en atenciones previas.</p>
-          <button class="btn btn-outline-success w-100 mt-3 fw-semibold">Ver Historial</button>
+          <button [routerLink]="['/paciente/citas']" class="btn btn-outline-success w-100 mt-3 fw-semibold">Ver Historial</button>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
           </div>
           <h5 class="card-title fw-bold text-dark">Mi Perfil Clínico</h5>
           <p class="card-text text-muted flex-grow-1">Consulte sus datos personales de registro, números de contacto y documentos registrados.</p>
-          <button class="btn btn-outline-info w-100 mt-3 fw-semibold text-dark">Gestionar Datos</button>
+          <button [routerLink]="['/paciente/perfil']" class="btn btn-outline-info w-100 mt-3 fw-semibold text-dark">Gestionar Datos</button>
         </div>
       </div>
     </div>
