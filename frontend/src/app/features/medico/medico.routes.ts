@@ -2,7 +2,11 @@ import { Routes } from '@angular/router';
 
 export const MEDICO_ROUTES: Routes = [
   {
-    path: '',
+    path: '', // URL: /medico (Muestra la Agenda Diaria por defecto)
     loadComponent: () => import('./pages/agenda-medico/agenda-medico.component').then(m => m.AgendaMedicoComponent)
+  },
+  {
+    path: 'perfil', // URL: /medico/perfil (Muestra la configuración del médico)
+    loadComponent: () => import('./pages/perfil-medico/perfil-medico.component').then(m => m.PerfilMedicoComponent)
   }
 ];

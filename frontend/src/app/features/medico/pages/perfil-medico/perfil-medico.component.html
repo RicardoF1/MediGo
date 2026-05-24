@@ -1,0 +1,74 @@
+<div class="container mb-5">
+  <div class="row g-4">
+    
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm p-4 text-center bg-white">
+        <div class="mb-3 d-inline-block mx-auto">
+          <span class="fs-1 p-4 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block">🩺</span>
+        </div>
+        <h4 class="fw-bold text-dark mb-1">Dr. {{ authService.currentUser()?.nombre }} {{ authService.currentUser()?.apellido }}</h4>
+        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 mb-3 px-3 py-2">
+          Cardiólogo Especialista
+        </span>
+        <hr>
+        <div class="text-start small text-muted">
+          <div class="mb-2"><strong>Colegiatura (CMP):</strong> <span class="font-monospace">#74859</span></div>
+          <div class="mb-2"><strong>Email Corporativo:</strong> {{ authService.currentUser()?.email }}</div>
+          <div class="mb-2"><strong>Usuario del Sistema:</strong> {{ authService.currentUser()?.username }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      
+      <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
+        <h5 class="fw-bold text-secondary mb-3">🎓 Credenciales y Asignación Institucional</h5>
+        <div class="row g-3">
+          <div class="col-sm-6 bg-light p-3 rounded-2 border-white border-2">
+            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">Centro Médico</small>
+            <span class="fw-bold text-dark fs-6">Sede Central - MediCore Huancayo</span>
+          </div>
+          <div class="col-sm-6 bg-light p-3 rounded-2 border-white border-2">
+            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">RNE (Especialidad)</small>
+            <span class="fw-bold text-success font-monospace fs-6">#039482</span>
+          </div>
+          <div class="col-12 bg-light p-3 rounded-2 border-white border-2">
+            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">Horario de Guardia Regular</small>
+            <span class="text-dark small fw-semibold">Lunes a Viernes: 08:00 hrs - 13:00 hrs / 14:00 hrs - 18:00 hrs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm p-4 bg-white">
+        <h5 class="fw-bold text-secondary mb-3">⚙️ Configuración del Entorno Clínico</h5>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label small fw-semibold text-muted">Ambiente / Consultorio Físico</label>
+            <input type="text" class="form-control form-control-custom" [ngModel]="consultorio()" (ngModelChange)="consultorio.set($event)">
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label small fw-semibold text-muted">Teléfono de Anexo / Contacto</label>
+            <input type="text" class="form-control form-control-custom" [ngModel]="telefonoContacto()" (ngModelChange)="telefonoContacto.set($event)">
+          </div>
+          
+          <div class="col-12 mt-4 bg-light p-3 rounded-3 d-flex align-items-center justify-content-between">
+            <div>
+              <h6 class="fw-bold text-dark mb-0">Estado de Alerta de Emergencias</h6>
+              <small class="text-muted">Permitir que el centro de control le asigne pacientes críticos fuera de agenda.</small>
+            </div>
+            <div class="form-check form-switch fs-4">
+              <input class="form-check-input" type="checkbox" role="switch" [checked]="estadoDisponibilidad()" (change)="estadoDisponibilidad.set(!estadoDisponibilidad())">
+            </div>
+          </div>
+
+          <div class="col-12 text-end mt-4">
+            <button (click)="guardarConfiguracion()" class="btn btn-primary fw-bold shadow-sm px-4">
+              Guardar Configuración
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

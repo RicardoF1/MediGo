@@ -27,9 +27,14 @@ import { CommonModule } from '@angular/common';
               </li>
             }
             @if (authService.userRole() === 'MEDICO') {
-              <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/medico']" routerLinkActive="active">Agenda Diaria</a>
-              </li>
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link" [routerLink]="['/medico']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mi Agenda</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" [routerLink]="['/medico/perfil']" routerLinkActive="active">Mi Perfil Profesional</a>
+                </li>
+              </ul>
             }
             @if (authService.userRole() === 'ADMIN') {
               <li class="nav-item">
