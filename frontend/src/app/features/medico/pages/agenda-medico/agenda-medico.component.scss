@@ -1,0 +1,21 @@
+.fs-xs {
+  font-size: 0.75rem;
+}
+
+.bg-light-custom {
+  background-color: #fcfdfe;
+  border: 1px solid #e2e8f0;
+  &:focus {
+    background-color: #ffffff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.12);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
