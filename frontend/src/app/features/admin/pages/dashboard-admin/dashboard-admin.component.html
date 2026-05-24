@@ -1,0 +1,58 @@
+<div class="container mb-5">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="p-4 bg-dark text-white rounded-3 shadow-sm border-0">
+        <h2 class="fw-bold mb-1">Centro de Control & Monitoreo Institucional</h2>
+        <p class="text-white-50 small mb-0">Rol: Administrador Centralizador del Sistema MediCore</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm p-3 border-start border-primary border-4 bg-white">
+        <span class="text-muted small text-uppercase fw-semibold">Pacientes Registrados</span>
+        <h2 class="fw-bold text-dark mt-1 mb-0">{{ adminService.metricas().totalPacientes }}</h2>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm p-3 border-start border-success border-4 bg-white">
+        <span class="text-muted small text-uppercase fw-semibold">Especialistas Activos</span>
+        <h2 class="fw-bold text-dark mt-1 mb-0">{{ adminService.metricas().totalMedicos }}</h2>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm p-3 border-start border-warning border-4 bg-white">
+        <span class="text-muted small text-uppercase fw-semibold">Turnos Transaccionados</span>
+        <h2 class="fw-bold text-dark mt-1 mb-0">{{ adminService.metricas().citasAgendadas }}</h2>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm p-3 border-start border-info border-4 bg-white">
+        <span class="text-muted small text-uppercase fw-semibold">Eficiencia del Servicio</span>
+        <h2 class="fw-bold text-dark mt-1 mb-0">{{ adminService.metricas().eficienciaAtencion }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+        <h5 class="fw-bold text-dark mb-2">⚙️ Configuración Operativa</h5>
+        <p class="text-muted small">Realice el alta de nuevos médicos especialistas en el sistema, gestione credenciales de acceso y asigne permisos corporativos.</p>
+        <button [routerLink]="['/admin/usuarios']" class="btn btn-primary fw-semibold mt-auto align-self-start">
+          Gestionar Usuarios y Personal
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+        <h5 class="fw-bold text-dark mb-2">📊 Reportes Estadísticos</h5>
+        <p class="text-muted small">Monitoree la afluencia de pacientes según especialidades de mayor demanda. (Análisis de datos clínicos institucionales).</p>
+        <button class="btn btn-outline-secondary fw-semibold mt-auto align-self-start" disabled>
+          Módulo de Reportes Listo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

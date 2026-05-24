@@ -1,0 +1,75 @@
+<div class="container mb-5">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 bg-white">
+        <h5 class="fw-bold text-dark mb-3">➕ Registrar Personal / Usuario</h5>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-muted">Nombre Completo</label>
+          <input type="text" class="form-control" [ngModel]="nombreInput()" (ngModelChange)="nombreInput.set($event)" placeholder="Ej. Dr. Armando Guerra">
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-muted">Correo Electrónico</label>
+          <input type="email" class="form-control" [ngModel]="correoInput()" (ngModelChange)="correoInput.set($event)" placeholder="ejemplo@medicore.com">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold text-muted">Rol Asignado</label>
+          <select class="form-select" [ngModel]="rolInput()" (ngModelChange)="rolInput.set($event)">
+            <option value="MEDICO">Médico Especialista</option>
+            <option value="PACIENTE">Paciente Regular</option>
+          </select>
+        </div>
+
+        <button (click)="registrarNuevoUsuario()" class="btn btn-dark w-100 fw-bold shadow-sm" [disabled]="!nombreInput().trim() || !correoInput().trim()">
+          Confirmar Alta
+        </button>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm p-4 bg-white">
+        <h5 class="fw-bold text-secondary mb-3">📋 Listado de Cuentas y Accesos</h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th class="text-end">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of adminService.usuarios(); track user.id) {
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">{{ user.nombre }}</div>
+                    <small class="text-muted font-monospace">{{ user.correo }}</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border font-monospace">{{ user.rol }}</span>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill px-3 py-2"
+                      [ngClass]="user.estado === 'ACTIVO' ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'">
+                      {{ user.estado }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <button (click)="adminService.alternarEstadoUsuario(user.id)" 
+                      class="btn btn-sm" 
+                      [ngClass]="user.estado === 'ACTIVO' ? 'btn-outline-danger' : 'btn-outline-success'">
+                      {{ user.estado === 'ACTIVO' ? 'Suspender' : 'Activar' }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
