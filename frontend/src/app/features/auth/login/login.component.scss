@@ -1,0 +1,15 @@
+.fs-2xs { font-size: 0.68rem; }
+.fs-xs { font-size: 0.75rem; }
+.fs-sm { font-size: 0.88rem; }
+.tracking-wider { letter-spacing: 0.05em; }
+
+.input-group .form-control:focus {
+  border-color: #cbd5e1;
+  box-shadow: none;
+}
+
+.btn-outline-success:hover,
+.btn-outline-primary:hover,
+.btn-outline-dark:hover {
+  color: #fff !important;
+}

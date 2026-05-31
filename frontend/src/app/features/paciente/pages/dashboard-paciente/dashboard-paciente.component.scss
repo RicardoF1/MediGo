@@ -1,20 +1,49 @@
-.transition-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.metric-card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f1f5f9 !important;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03) !important;
+    border-color: #e2e8f0 !important;
+  }
+}
+
+.metric-icon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 12px;
 }
 
-.transition-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.08) !important;
+.custom-table {
+  thead {
+    tr th {
+      border-bottom: 1px solid #e2e8f0;
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+  }
+  
+  tbody {
+    tr td {
+      padding-top: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+  }
 }
 
-.table th {
-  font-size: 0.85rem;
-  text-uppercase: true;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.table-row-hover {
+  transition: background-color 0.15s ease;
+  &:hover {
+    background-color: #f8fafc;
+  }
 }
 
-.fs-xs {
-  font-size: 0.75rem;
-}
+.fs-xs { font-size: 0.72rem; }
+.fs-sm { font-size: 0.88rem; }
+.shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+

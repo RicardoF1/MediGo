@@ -1,23 +1,56 @@
-import { Component, signal, inject } from '@angular/core';
-
-import { AuthService } from '../../../../core/services/auth.service';
+import { Component, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MedicoService } from '../../services/medico.service';
+import { PerfilMedico } from '../../models/agenda.model';
 
 @Component({
-    selector: 'app-perfil-medico',
-    imports: [FormsModule],
-    templateUrl: './perfil-medico.component.html',
-    styleUrls: ['./perfil-medico.component.scss']
+  selector: 'app-perfil-medico',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './perfil-medico.component.html',
+  styleUrls: ['./perfil-medico.component.scss']
 })
 export class PerfilMedicoComponent {
-  public authService = inject(AuthService);
+  private medicoService = inject(MedicoService);
 
-  // Estados locales reactivos controlados por Signals para simular cambios de consultorio y contacto
-  public consultorio = signal<string>('Consultorio 304 - Piso 3 (Ala Norte)');
-  public telefonoContacto = signal<string>('+51 912 345 678');
-  public estadoDisponibilidad = signal<boolean>(true); // True: Disponible para emergencias
+  // Datos originales del servicio
+  private perfilOriginal = this.medicoService.perfil;
 
-  guardarConfiguracion(): void {
-    alert('💾 Configuración profesional y de consultorio actualizada con éxito en el Frontend.');
+  // SIGNAL FORMS: Propiedades reactivas independientes para la edición
+  public telefono = signal<string>(this.perfilOriginal().telefono);
+  public consultorio = signal<string>(this.perfilOriginal().consultorio);
+  public activoParaCitas = signal<boolean>(this.perfilOriginal().activoParaCitas);
+
+  // VALIDACIONES EN TIEMPO REAL (Signal Forms Pattern)
+  public esTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.telefono()));
+  public esConsultorioValido = computed(() => this.consultorio().trim().length >= 5);
+
+  public esFormularioValido = computed(() => this.esTelefonoValido() && this.esConsultorioValido());
+
+  // COMPUTED: Detecta de manera reactiva si hay cambios reales frente al servicio
+  public tieneCambios = computed(() => {
+    return this.telefono() !== this.perfilOriginal().telefono ||
+           this.consultorio() !== this.perfilOriginal().consultorio ||
+           this.activoParaCitas() !== this.perfilOriginal().activoParaCitas;
+  });
+
+  // Getter para los campos informativos fijos
+  public get infoFija() {
+    return this.perfilOriginal();
+  }
+
+  guardarPerfil(): void {
+    if (!this.esFormularioValido() || !this.tieneCambios()) return;
+
+    const payload: PerfilMedico = {
+      ...this.perfilOriginal(),
+      telefono: this.telefono(),
+      consultorio: this.consultorio(),
+      activoParaCitas: this.activoParaCitas()
+    };
+
+    this.medicoService.actualizarPerfil(payload);
+    alert('💾 Configuración profesional actualizada correctamente en el sistema.');
   }
 }

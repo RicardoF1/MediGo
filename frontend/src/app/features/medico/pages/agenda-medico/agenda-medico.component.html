@@ -1,117 +1,122 @@
 <div class="container mb-5">
-  
-  <div class="row g-4 mb-4">
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm bg-white p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Pendientes Hoy</span>
-            <h3 class="fw-bold text-dark mt-1 mb-0">{{ medicoService.totalPendientes() }}</h3>
-          </div>
-          <span class="fs-3 p-2 bg-warning bg-opacity-10 text-warning rounded">⏳</span>
-        </div>
-      </div>
+
+  <!-- Encabezado del Módulo -->
+  <div class="text-center mb-5">
+    <div class="d-inline-block p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+      <i class="bi bi-calendar3-event fs-1"></i>
     </div>
-    
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm bg-white p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <div>
-            <span class="text-muted small fw-semibold text-uppercase">Atendidos Hoy</span>
-            <h3 class="fw-bold text-dark mt-1 mb-0">{{ medicoService.totalAtendidos() }}</h3>
-          </div>
-          <span class="fs-3 p-2 bg-success bg-opacity-10 text-success rounded">✅</span>
-        </div>
-      </div>
-    </div>
+    <h2 class="fw-bold text-dark mb-2">Gestión de Agenda Médica</h2>
+    <p class="text-muted">Administre los turnos agendados, controle los estados de atención y revise los motivos de consulta.</p>
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-7">
-      <div class="card border-0 shadow-sm p-4 h-100">
-        <h4 class="fw-bold text-secondary mb-3">📋 Cronograma Diario de Pacientes</h4>
-        
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Hora</th>
-                <th>Paciente / Sintomatología</th>
-                <th>Estado</th>
-                <th class="text-end">Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (cita of medicoService.citasAgenda(); track cita.id) {
-                <tr>
-                  <td><span class="badge bg-light text-dark border font-monospace py-2 px-3">{{ cita.hora }}</span></td>
-                  <td>
-                    <div class="fw-bold text-dark">{{ cita.pacienteNombre }}</div>
-                    <small class="text-muted">{{ cita.pacienteEdad }} años &middot; <em>{{ cita.motivoConsulta }}</em></small>
-                  </td>
-                  <td>
-                    <span class="badge rounded-pill px-3 py-2 fs-xs"
-                      [ngClass]="cita.estado === 'PENDIENTE' ? 'bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20' : 'bg-success bg-opacity-10 text-success border border-success border-opacity-20'">
-                      {{ cita.estado }}
-                    </span>
-                  </td>
-                  <td class="text-end">
-                    @if (cita.estado === 'PENDIENTE') {
-                      <button (click)="abrirFichaConsulta(cita)" class="btn btn-sm btn-primary fw-semibold shadow-sm px-3">
-                        Atender
-                      </button>
-                    } @else {
-                      <button class="btn btn-sm btn-outline-secondary px-3" disabled>Completado</button>
-                    }
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <!-- Segmentación de Filtros Reactivos -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div class="btn-group shadow-xs bg-white p-1 rounded-3 border" role="group">
+      <button type="button" class="btn btn-sm px-3 rounded-2" 
+              [ngClass]="filtroEstado() === 'TODAS' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroEstado.set('TODAS')">
+        Todas ({{ todasLasCitas().length }})
+      </button>
+      <button type="button" class="btn btn-sm px-3 rounded-2" 
+              [ngClass]="filtroEstado() === 'CONFIRMADA' ? 'btn-primary' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroEstado.set('CONFIRMADA')">
+        Confirmadas
+      </button>
+      <button type="button" class="btn btn-sm px-3 rounded-2" 
+              [ngClass]="filtroEstado() === 'ATENDIDA' ? 'btn-success' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroEstado.set('ATENDIDA')">
+        Atendidas
+      </button>
     </div>
 
-    <div class="col-lg-5">
-      @if (citaSeleccionada()) {
-        <div class="card border-0 shadow-sm p-4 border-start border-primary border-4 animate-fade-in bg-white">
-          <h4 class="fw-bold text-dark mb-1">📄 Registro de Consulta Médica</h4>
-          <p class="text-muted small mb-3">Paciente en atención: <strong class="text-primary">{{ citaSeleccionada()?.pacienteNombre }}</strong></p>
-          
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-secondary small">Anamnesis / Diagnóstico</label>
-            <textarea 
-              class="form-control bg-light-custom" 
-              rows="4" 
-              placeholder="Escriba el diagnóstico patológico detallado..."
-              [ngModel]="diagnosticoInput()" 
-              (ngModelChange)="diagnosticoInput.set($event)"></textarea>
-          </div>
+    <span class="text-xs fw-bold text-uppercase text-muted tracking-wider">
+      <i class="bi bi-funnel-fill me-1"></i> Visualización dinámica
+    </span>
+  </div>
 
-          <div class="mb-4">
-            <label class="form-label fw-semibold text-secondary small">Tratamiento / Receta Farmacológica</label>
-            <textarea 
-              class="form-control bg-light-custom" 
-              rows="3" 
-              placeholder="Medicamentos, dosificación y periodo de administración..."
-              [ngModel]="tratamientoInput()" 
-              (ngModelChange)="tratamientoInput.set($event)"></textarea>
-          </div>
-
-          <div class="d-flex gap-2 justify-content-end">
-            <button (click)="citaSeleccionada.set(null)" class="btn btn-sm btn-outline-secondary fw-semibold px-3">Cancelar</button>
-            <button (click)="guardarConsulta()" class="btn btn-sm btn-success fw-bold px-4 shadow-sm" [disabled]="!diagnosticoInput().trim()">
-              Finalizar Consulta
-            </button>
-          </div>
-        </div>
-      } @else {
-        <div class="card border-0 shadow-sm p-4 h-100 d-flex flex-column align-items-center justify-content-center text-center bg-white bg-opacity-50">
-          <span class="fs-1 text-muted mb-2">`.`🩺</span>
-          <h5 class="text-secondary fw-bold">Ningún Paciente en Box</h5>
-          <p class="text-muted small px-3 mb-0">Seleccione un paciente de la lista con estado <span class="text-warning font-semibold">PENDIENTE</span> para habilitar su módulo de diagnóstico clínico.</p>
-        </div>
-      }
+  <!-- Contenedor del Listado / Tabla de Control -->
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
+    <div class="table-responsive">
+      <table class="table align-middle custom-table mb-0">
+        <thead class="table-light text-muted small fw-semibold">
+          <tr>
+            <th scope="col" class="ps-4">Paciente</th>
+            <th scope="col">Documento (DNI)</th>
+            <th scope="col">Horario Programado</th>
+            <th scope="col">Motivo de Consulta</th>
+            <th scope="col">Estado</th>
+            <th scope="col" class="text-end pe-4">Acciones Clínicas</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cita of citasFiltradas(); track cita.id) {
+            <tr class="table-row-hover">
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar-init shadow-xs text-white bg-secondary fw-bold rounded-circle d-flex align-items-center justify-content-center text-uppercase">
+                    {{ cita.pacienteNombre.charAt(0) }}
+                  </div>
+                  <span class="fw-bold text-dark fs-sm">{{ cita.pacienteNombre }}</span>
+                </div>
+              </td>
+              <td class="text-secondary fs-sm font-monospace">{{ cita.pacienteDni }}</td>
+              <td>
+                <div class="fs-sm fw-semibold text-dark mb-0">
+                  <i class="bi bi-clock text-muted me-2"></i>{{ cita.hora }} hrs
+                </div>
+                <small class="text-muted text-xs">{{ cita.fecha }}</small>
+              </td>
+              <td>
+                <p class="text-truncate text-secondary mb-0 fs-sm" style="max-width: 240px;" [title]="cita.motivoConsulta">
+                  {{ cita.motivoConsulta }}
+                </p>
+              </td>
+              <td>
+                @if (cita.estado === 'CONFIRMADA') {
+                  <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 py-1.5 px-3 rounded-pill fw-semibold fs-xs">
+                    Confirmada
+                  </span>
+                } @else if (cita.estado === 'PENDIENTE') {
+                  <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20 py-1.5 px-3 rounded-pill fw-semibold fs-xs">
+                    Pendiente
+                  </span>
+                } @else if (cita.estado === 'ATENDIDA') {
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 py-1.5 px-3 rounded-pill fw-semibold fs-xs">
+                    Atendida
+                  </span>
+                } @else {
+                  <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 py-1.5 px-3 rounded-pill fw-semibold fs-xs">
+                    Cancelada
+                  </span>
+                }
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-flex gap-2 justify-content-end">
+                  @if (cita.estado !== 'ATENDIDA' && cita.estado !== 'CANCELADA') {
+                    <button (click)="actualizarEstado(cita.id, 'ATENDIDA')" 
+                            class="btn btn-sm btn-success px-3 fs-xs fw-bold shadow-xs">
+                      <i class="bi bi-check-lg me-1"></i> Atender
+                    </button>
+                    <button (click)="actualizarEstado(cita.id, 'CANCELADA')" 
+                            class="btn btn-sm btn-outline-danger px-2 fs-xs fw-semibold">
+                      <i class="bi bi-calendar-x"></i>
+                    </button>
+                  } @else {
+                    <span class="text-muted fs-xs fw-medium italic text-opacity-50">Sin acciones pendientes</span>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x fs-1 opacity-50 d-block mb-2"></i>
+                <p class="mb-0 small fw-medium">No se registran citas programadas bajo el filtro seleccionado.</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </div>
 

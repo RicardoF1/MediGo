@@ -1,0 +1,32 @@
+// Contenedor principal del icono de la marca
+.footer-icon {
+  width: 30px;
+  height: 30px;
+  font-size: 1rem;
+}
+
+// Forzar visibilidad y transiciones suaves en los hipervínculos del footer
+.footer-link {
+  color: #94a3b8 !important; // Gris claro premium con alto contraste
+  transition: color 0.15s ease, padding-left 0.15s ease;
+  display: inline-block;
+  
+  &:hover {
+    color: var(--bs-primary) !important; // Cambia al azul corporativo en hover
+    padding-left: 4px;
+  }
+}
+
+// Forzar que los textos descriptivos ordinarios sean legibles
+p.text-muted, 
+span.text-muted {
+  color: #cbd5e1 !important; // Gris intermedio/claro altamente legible sobre fondo negro
+}
+
+// Clases de utilidad de tamaño y espaciado optimizados
+.fs-3xs { font-size: 0.55rem; }
+.fs-2xs { font-size: 0.65rem; }
+.fs-xs { font-size: 0.75rem; }
+.tracking-tight { letter-spacing: -0.02em; }
+.tracking-wider { letter-spacing: 0.06em; }
+.tracking-widest { letter-spacing: 0.12em; }

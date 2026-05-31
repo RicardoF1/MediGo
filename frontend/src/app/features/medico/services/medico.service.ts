@@ -1,30 +1,61 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { CitaMedico } from '../models/agenda.model';
+import { Injectable, signal } from '@angular/core';
+import { CitaMedico, PerfilMedico } from '../models/agenda.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MedicoService {
-  // Estado local simulado para la agenda del médico logueado
+  // Estado reactivo de las citas asignadas al médico logueado
   private _citasAgenda = signal<CitaMedico[]>([
-    { id: 501, pacienteNombre: 'Ricardo Almonacid', pacienteEdad: 24, hora: '08:00', estado: 'PENDIENTE', motivoConsulta: 'Chequeo general preventivo' },
-    { id: 502, pacienteNombre: 'María Elena Flores', pacienteEdad: 45, hora: '09:30', estado: 'PENDIENTE', motivoConsulta: 'Control de hipertensión arterial' },
-    { id: 503, pacienteNombre: 'Juan Carlos Soto', pacienteEdad: 32, hora: '11:00', estado: 'ATENDIDA', motivoConsulta: 'Evaluación física anual' }
+    {
+      id: 101,
+      pacienteId: 1,
+      pacienteNombre: 'Ricardo Miguel Flores Toribio',
+      pacienteDni: '74839201',
+      fecha: '2026-06-05',
+      hora: '10:00',
+      estado: 'CONFIRMADA',
+      motivoConsulta: 'Chequeo rutinario de presión y control cardiovascular.'
+    },
+    {
+      id: 102,
+      pacienteId: 2,
+      pacienteNombre: 'Camila San Martín Vega',
+      pacienteDni: '45892013',
+      fecha: '2026-06-05',
+      hora: '11:30',
+      estado: 'PENDIENTE',
+      motivoConsulta: 'Evaluación por arritmias esporádicas.'
+    }
   ]);
-
-  // Exposición de solo lectura de la Signal
   public citasAgenda = this._citasAgenda.asReadonly();
 
-  // Signals computadas para estadísticas rápidas en la cabecera médica
-  public totalPendientes = computed(() => this._citasAgenda().filter(c => c.estado === 'PENDIENTE').length);
-  public totalAtendidos = computed(() => this._citasAgenda().filter(c => c.estado === 'ATENDIDA').length);
-
   /**
-   * Actualiza el estado de una cita médica a ATENDIDA tras registrar el diagnóstico
+   * Actualiza transaccionalmente el estado clínico de una cita en la agenda
    */
-  registrarAtencion(citaId: number): void {
+  cambiarEstadoCita(citaId: number, nuevoEstado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA'): void {
     this._citasAgenda.update(citas => 
-      citas.map(c => c.id === citaId ? { ...c, estado: 'ATENDIDA' } : c)
+      citas.map(c => c.id === citaId ? { ...c, estado: nuevoEstado } : c)
     );
   }
+
+  // Estado reactivo del perfil del médico logueado
+  private _perfil = signal<PerfilMedico>({
+    nombreCompleto: 'Dr. Carlos Mendoza Arana',
+    colegiatura: 'CMP-75943',
+    especialidad: 'Cardiología',
+    correo: 'carlos.mendoza@hospital.com',
+    telefono: '955412367',
+    consultorio: 'Bloque B - Piso 3 (Consultorio 302)',
+    activoParaCitas: true
+  });
+  public perfil = this._perfil.asReadonly();
+  
+  /**
+   * Actualiza los datos del perfil del médico de forma inmutable
+   */
+  actualizarPerfil(datosActualizados: PerfilMedico): void {
+    this._perfil.set({ ...datosActualizados });
+  }
+
 }

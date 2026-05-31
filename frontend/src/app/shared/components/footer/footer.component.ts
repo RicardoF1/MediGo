@@ -1,35 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  template: `
-    <footer class="footer mt-auto py-3 bg-white border-top text-center">
-      <div class="container">
-        <span class="text-muted small">
-          &copy; 2026 <strong>MediCore Inc.</strong> — Sistema de Gestión Integrada de Citas Médicas. Todos los derechos reservados.
-        </span>
-      </div>
-    </footer>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      margin-top: auto;
-    }
-  `]
-})
-export class FooterComponent {}
-/* import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-footer',
-  standalone: true,
-  imports: [],
+  imports: [CommonModule, RouterModule],
   templateUrl: './footer.component.html',
-  styles: ``
+  styleUrls: ['./footer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
-
+  // Inyección pública para exponer los estados reactivos del usuario a la vista
+  public authService = inject(AuthService);
+  
+  // Obtenemos el año en curso dinámicamente
+  public anioActual = new Date().getFullYear();
 }
- */

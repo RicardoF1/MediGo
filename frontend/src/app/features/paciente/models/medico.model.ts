@@ -1,4 +1,4 @@
-export interface Medico {
+/* export interface Medico {
   id: number;
   nombre: string;
   especialidadId: number;
@@ -8,4 +8,4 @@ export interface Medico {
 export interface Especialidad {
   id: number;
   nombre: string;
-}
+} */

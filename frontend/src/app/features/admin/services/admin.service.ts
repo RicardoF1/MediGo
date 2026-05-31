@@ -1,50 +1,101 @@
-import { Injectable, signal, computed } from '@angular/core';
-import { UsuarioAdmin, Metricashome } from '../models/admin.model';
+import { Injectable, inject, computed, signal } from '@angular/core';
+import { PacienteService } from '../../paciente/services/paciente.service';
+import { MedicoService } from '../../medico/services/medico.service';
+import { UsuarioAuditoria } from '../models/admin.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-  // Estado local reactivo de usuarios de la clínica (Mock)
-  private _usuarios = signal<UsuarioAdmin[]>([
-    { id: 1, nombre: 'Dr. Carlos Mendoza', correo: 'c.mendoza@medicore.com', rol: 'MEDICO', estado: 'ACTIVO' },
-    { id: 2, nombre: 'Dra. Ana Rivas', correo: 'a.rivas@medicore.com', rol: 'MEDICO', estado: 'ACTIVO' },
-    { id: 3, nombre: 'Dra. Sofía Castro', correo: 's.castro@medicore.com', rol: 'MEDICO', estado: 'INACTIVO' },
-    { id: 4, nombre: 'Ricardo Almonacid', correo: 'ricardo@student.com', rol: 'PACIENTE', estado: 'ACTIVO' },
-    { id: 5, nombre: 'María Elena Flores', correo: 'maria.flores@gmail.com', rol: 'PACIENTE', estado: 'ACTIVO' }
-  ]);
+  // Inyección de dependencias de los cores de negocio existentes
+  private pacienteService = inject(PacienteService);
+  private medicoService = inject(MedicoService);
 
-  public usuarios = this._usuarios.asReadonly();
-
-  // Signals Computadas: Calculan analíticas en tiempo real para el Centro de Control
-  public metricas = computed<Metricashome>(() => {
-    const list = this._usuarios();
-    return {
-      totalPacientes: list.filter(u => u.rol === 'PACIENTE').length,
-      totalMedicos: list.filter(u => u.rol === 'MEDICO' && u.estado === 'ACTIVO').length,
-      citasAgendadas: 24, // Simulación de control de citas
-      eficienciaAtencion: '94.2%'
-    };
+  // SIGNALS COMPUTADAS AVANZADAS: Procesan KPIs en tiempo real cruzando múltiples estados
+  public totalMedicosActivos = computed(() => this.pacienteService.medicos().length);
+  
+  public totalCitasGlobales = computed(() => {
+    // Une las citas de auditoría con las del módulo transaccional de pacientes
+    return this.pacienteService.citas().length + this.medicoService.citasAgenda().length;
   });
 
+  public totalCitasConfirmadas = computed(() => {
+    const totalP = this.pacienteService.citas().filter(c => c.estado === 'CONFIRMADA').length;
+    const totalM = this.medicoService.citasAgenda().filter(c => c.estado === 'CONFIRMADA').length;
+    return totalP + totalM;
+  });
+
+  public totalCitasAtendidas = computed(() => {
+    const totalP = this.pacienteService.citas().filter(c => c.estado === 'ATENDIDA').length;
+    const totalM = this.medicoService.citasAgenda().filter(c => c.estado === 'ATENDIDA').length;
+    return totalP + totalM;
+  });
+
+  public tasaOcupacionClinica = computed(() => {
+    const globales = this.totalCitasGlobales();
+    if (globales === 0) return 0;
+    // Calcula el porcentaje analítico de éxito operacional
+    return Math.round((this.totalCitasAtendidas() / globales) * 100);
+  });
+
+
+  // Estado inicial reactivo de las cuentas de usuario registradas
+  private _usuariosMaster = signal<UsuarioAuditoria[]>([
+    {
+      id: 1,
+      nombreCompleto: 'Ricardo Miguel Flores Toribio',
+      correo: 'ricardo.flores@hospital.com',
+      rol: 'PACIENTE',
+      fechaRegistro: '2026-04-10',
+      estadoCuenta: 'ACTIVO',
+      ultimaConexion: '2026-05-31 15:30'
+    },
+    {
+      id: 2,
+      nombreCompleto: 'Dr. Carlos Mendoza Arana',
+      correo: 'carlos.mendoza@hospital.com',
+      rol: 'MEDICO',
+      fechaRegistro: '2025-09-20',
+      estadoCuenta: 'ACTIVO',
+      ultimaConexion: '2026-05-31 16:15'
+    },
+    {
+      id: 3,
+      nombreCompleto: 'Camila San Martín Vega',
+      correo: 'camila.sanmartin@hospital.com',
+      rol: 'PACIENTE',
+      fechaRegistro: '2026-05-02',
+      estadoCuenta: 'ACTIVO',
+      ultimaConexion: '2026-05-30 11:00'
+    },
+    {
+      id: 4,
+      nombreCompleto: 'Admin General Corporativo',
+      correo: 'admin.ops@hospital.com',
+      rol: 'ADMINISTRADOR',
+      fechaRegistro: '2025-01-15',
+      estadoCuenta: 'ACTIVO',
+      ultimaConexion: '2026-05-31 16:30'
+    }
+  ]);
+
+  public usuariosMaster = this._usuariosMaster.asReadonly();
+
   /**
-   * Cambia el estado (Activo/Inactivo) de un usuario en el sistema
+   * Modifica transaccionalmente el acceso de seguridad de un usuario
    */
-  alternarEstadoUsuario(id: number): void {
-    this._usuarios.update(users =>
-      users.map(u => u.id === id ? { ...u, estado: u.estado === 'ACTIVO' ? 'INACTIVO' : 'ACTIVO' } : u)
+  conmutarEstadoCuenta(usuarioId: number): void {
+    this._usuariosMaster.update(lista =>
+      lista.map(u => {
+        if (u.id === usuarioId) {
+          const nuevoEstado = u.estadoCuenta === 'ACTIVO' ? 'SUSPENDIDO' : 'ACTIVO';
+          return { ...u, estadoCuenta: nuevoEstado };
+        }
+        return u;
+      })
     );
   }
 
-  /**
-   * Registra un nuevo profesional o paciente en el listado centralizado
-   */
-  crearUsuario(nuevo: Omit<UsuarioAdmin, 'id' | 'estado'>): void {
-    const usuarioCompleto: UsuarioAdmin = {
-      id: Math.floor(Math.random() * 10000),
-      estado: 'ACTIVO',
-      ...nuevo
-    };
-    this._usuarios.update(users => [...users, usuarioCompleto]);
-  }
+
+
 }

@@ -1,1 +1,60 @@
-<p>footer works!</p>
+<footer class="bg-dark text-light pt-5 pb-4 border-top border-secondary border-opacity-20 mt-auto">
+  <div class="container">
+    <div class="row g-4">
+      
+      <div class="col-md-4">
+        <div class="d-flex align-items-center fw-bold text-white mb-3">
+          <div class="footer-icon bg-primary bg-opacity-20 text-primary rounded-3 d-flex align-items-center justify-content-center me-2">
+            <i class="bi bi-heart-pulse-fill text-white"></i>
+          </div>
+          <span class="fs-5 tracking-tight">MEDICORE</span>
+        </div>
+        <p class="text-muted small lh-base mb-0">
+          Plataforma médica integrada para la optimización de servicios de salud, gestión operativa de staff clínico y auditoría de accesos bajo estándares TI de alta disponibilidad.
+        </p>
+      </div>
+
+      <div class="col-6 col-md-3 offset-md-1">
+        <h6 class="text-white fw-bold text-uppercase tracking-wider small mb-3">Enlaces del Sistema</h6>
+        <ul class="list-unstyled d-flex flex-column gap-2">
+          
+          @if (authService.isAuthenticated()) {
+            <li>
+              <a [routerLink]="authService.rutaInicioPorRol()" class="footer-link small text-decoration-none text-muted">
+                <i class="bi bi-chevron-right me-1 fs-3xs"></i>Panel Principal
+              </a>
+            </li>
+          } @else {
+            <li>
+              <a routerLink="/auth/login" class="footer-link small text-decoration-none text-muted">
+                <i class="bi bi-chevron-right me-1 fs-3xs"></i>Ingreso al Portal
+              </a>
+            </li>
+          }
+          
+          <li><a href="#" class="footer-link small text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 fs-3xs"></i>Términos de Servicio</a></li>
+          <li><a href="#" class="footer-link small text-decoration-none text-muted"><i class="bi bi-chevron-right me-1 fs-3xs"></i>Políticas de Privacidad</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <h6 class="text-white fw-bold text-uppercase tracking-wider small mb-3">Soporte Técnico</h6>
+        <p class="text-muted small mb-2">
+          <i class="bi bi-building me-2"></i>Central de Operaciones TI
+        </p>
+        <p class="text-muted small mb-0">
+          <i class="bi bi-envelope-check me-2"></i>soporte.clinica&#64;hospital.com
+        </p>
+      </div>
+
+    </div>
+
+    <div class="border-top border-secondary border-opacity-20 mt-4 pt-4 d-flex justify-content-between align-items-center flex-wrap gap-2 text-white">
+      <span class="text-muted small fs-xs">
+        &copy; {{ anioActual }} MEDICORE. Todos los derechos reservados.
+      </span>
+      
+    </div>
+
+  </div>
+</footer>

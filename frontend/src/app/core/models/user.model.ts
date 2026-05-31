@@ -1,11 +1,15 @@
-export type UserRole = 'PACIENTE' | 'MEDICO' | 'ADMIN';
+export type RolUsuario = 'ADMINISTRADOR' | 'MEDICO' | 'PACIENTE' | null;
 
-export interface User {
-  id: number;
-  username: string;
-  nombre: string;
-  apellido: string;
+export interface LoginData {
   email: string;
-  role: UserRole;
-  token?: string;
+  password: string;
+}
+
+// Estructura del usuario autenticado devuelto por la sesión
+export interface UsuarioSesion {
+  id: number;
+  nombre: string;
+  correo: string;
+  rol: RolUsuario;
+  token: string;
 }

@@ -1,6 +1,9 @@
 <div class="container mb-5">
   
   <div class="text-center mb-5">
+    <div class="d-inline-block p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+      <i class="bi bi-calendar-plus fs-1"></i>
+    </div>
     <h2 class="fw-bold text-dark mb-2">Agendamiento de Citas Médicas</h2>
     <p class="text-muted">Proceso optimizado de reserva médica institucional.</p>
   </div>
@@ -33,24 +36,30 @@
         
         @if (pasoActual() === 1) {
           <div class="animate-fade">
-            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">01.</span> Seleccione la especialidad médica</h5>
+            <h5 class="fw-bold text-secondary mb-4">
+              <span class="text-primary me-2">01.</span> Seleccione la especialidad médica
+            </h5>
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
                      [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '1'}"
                      (click)="especialidadSeleccionada.set('1')">
-                  <span class="fs-1 d-block mb-2">❤️</span>
+                  <div class="fs-1 text-danger mb-2">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                  </div>
                   <h6 class="fw-bold text-dark mb-1">Cardiología</h6>
-                  <p class="text-muted small mb-0">Salud cardiovascular e hipertensión.</p>
+                  <p class="text-muted small mb-0">Salud cardiovascular e hipertensión arterial.</p>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
                      [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '2'}"
                      (click)="especialidadSeleccionada.set('2')">
-                  <span class="fs-1 d-block mb-2">🧸</span>
+                  <div class="fs-1 text-info mb-2">
+                    <i class="bi bi-backpack-fill"></i>
+                  </div>
                   <h6 class="fw-bold text-dark mb-1">Pediatría</h6>
-                  <p class="text-muted small mb-0">Medicina infantil y del desarrollo.</p>
+                  <p class="text-muted small mb-0">Medicina infantil, neonatal y del desarrollo.</p>
                 </div>
               </div>
             </div>
@@ -59,7 +68,9 @@
 
         @if (pasoActual() === 2) {
           <div class="animate-fade">
-            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">02.</span> Seleccione un profesional del Staff</h5>
+            <h5 class="fw-bold text-secondary mb-4">
+              <span class="text-primary me-2">02.</span> Seleccione un profesional del Staff
+            </h5>
             <div class="row g-3">
               @for (medico of medicosFiltrados(); track medico.id) {
                 <div class="col-12">
@@ -71,12 +82,18 @@
                       <div class="flex-grow-1">
                         <h6 class="fw-bold text-dark mb-1">{{ medico.nombre }}</h6>
                         <div class="d-flex align-items-center gap-2">
-                          <span class="badge bg-light text-primary border fs-xs py-1">Colegiatura Verificada</span>
-                          <span class="text-warning small">⭐ {{ medico.calificacion }}.0</span>
+                          <span class="badge bg-light text-primary border fs-xs py-1">
+                            <i class="bi bi-patch-check-fill me-1"></i>Colegiatura Verificada
+                          </span>
+                          <span class="text-warning small">
+                            <i class="bi bi-star-fill me-1"></i>{{ medico.calificacion }}.0
+                          </span>
                         </div>
                       </div>
                       <div class="text-end">
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 py-2 px-3 fw-semibold fs-xs">Disponible</span>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 py-2 px-3 fw-semibold fs-xs">
+                          <i class="bi bi-clock-history me-1"></i>Disponible
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -88,7 +105,9 @@
 
         @if (pasoActual() === 3) {
           <div class="animate-fade">
-            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">03.</span> Detalle de la Agenda y Síntomas</h5>
+            <h5 class="fw-bold text-secondary mb-4">
+              <span class="text-primary me-2">03.</span> Detalle de la Agenda y Síntomas
+            </h5>
             
             <div class="d-flex align-items-center gap-3 bg-light p-3 rounded-3 mb-4">
               <img [src]="infoMedicoSeleccionado()?.avatar" class="rounded-circle object-fit-cover" style="width: 45px; height: 45px;">
@@ -100,11 +119,15 @@
 
             <div class="row g-3">
               <div class="col-sm-6">
-                <label class="form-label small fw-semibold text-muted">Fecha elegida</label>
+                <label class="form-label small fw-semibold text-muted">
+                  <i class="bi bi-calendar3 me-1"></i>Fecha elegida
+                </label>
                 <input type="date" class="form-control" [ngModel]="fechaSeleccionada()" (ngModelChange)="fechaSeleccionada.set($event)">
               </div>
               <div class="col-sm-6">
-                <label class="form-label small fw-semibold text-muted">Turno de Atención</label>
+                <label class="form-label small fw-semibold text-muted">
+                  <i class="bi bi-clock me-1"></i>Turno de Atención
+                </label>
                 <select class="form-select" [ngModel]="horaSeleccionada()" (ngModelChange)="horaSeleccionada.set($event)">
                   <option value="">Seleccione un horario...</option>
                   @for (hora of infoMedicoSeleccionado()?.disponibilidad; track hora) {
@@ -113,7 +136,9 @@
                 </select>
               </div>
               <div class="col-12 mt-3">
-                <label class="form-label small fw-semibold text-muted">Sintomatología / Motivo</label>
+                <label class="form-label small fw-semibold text-muted">
+                  <i class="bi bi-chat-right-text me-1"></i>Sintomatología / Motivo
+                </label>
                 <textarea class="form-control" rows="3" 
                           placeholder="Escriba detalladamente sus malestares (mínimo 10 letras)..."
                           [ngModel]="motivoConsulta()" 
@@ -121,7 +146,7 @@
                 
                 @if (motivoConsulta().trim().length > 0 && motivoConsulta().trim().length < 10) {
                   <div class="text-danger fs-xs mt-1 fw-medium animate-fade">
-                    ⚠️ Descripción muy corta. Falta ingresar caracteres para cumplir con la validación de seguridad.
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>Descripción muy corta. Falta ingresar caracteres para cumplir con la validación de seguridad.
                   </div>
                 }
               </div>
@@ -131,17 +156,17 @@
 
         <div class="d-flex justify-content-between mt-5 pt-3 border-top">
           <button (click)="anteriorPaso()" class="btn btn-outline-secondary px-4 fw-semibold" [disabled]="pasoActual() === 1">
-            Atrás
+            <i class="bi bi-arrow-left me-2"></i>Atrás
           </button>
 
           @if (pasoActual() < 3) {
             <button (click)="siguientePaso()" class="btn btn-primary px-4 fw-bold shadow-sm"
                     [disabled]="(pasoActual() === 1 && !esPaso1Valido()) || (pasoActual() === 2 && !esPaso2Valido())">
-              Siguiente
+              Siguiente<i class="bi bi-arrow-right ms-2"></i>
             </button>
           } @else {
             <button (click)="finalizarReserva()" class="btn btn-success px-4 fw-bold shadow-sm" [disabled]="!esPaso3Valido()">
-              Confirmar y Registrar Cita
+              <i class="bi bi-check-circle-fill me-2"></i>Confirmar y Registrar Cita
             </button>
           }
         </div>
@@ -151,121 +176,3 @@
   </div>
 
 </div>
-<!-- <div class="container mb-5">
-  <div class="card border-0 shadow-sm mb-4 card-header-custom">
-    <div class="card-body p-4">
-      <h3 class="text-primary fw-bold mb-1">Nueva Solicitud de Cita Médica</h3>
-      <p class="text-muted small mb-0">Gestione su programación de turnos de manera guiada.</p>
-      
-      <div class="row text-center mt-4 border-top pt-3 text-uppercase font-monospace fs-7">
-        <div class="col-4" [ngClass]="{'text-primary fw-bold': pasoActual() === 1}">1. Especialidad</div>
-        <div class="col-4" [ngClass]="{'text-primary fw-bold': pasoActual() === 2}">2. Horario</div>
-        <div class="col-4" [ngClass]="{'text-primary fw-bold': pasoActual() === 3}">3. Verificación</div>
-      </div>
-      <div class="progress mt-2 custom-progress">
-        <div class="progress-bar bg-primary" role="progressbar" [style.width]="(pasoActual() * 33.33) + '%'"></div>
-      </div>
-    </div>
-  </div>
-
-  @if (pasoActual() === 1) {
-    <div class="card border-0 shadow-sm p-4">
-      <div class="row g-4">
-        <div class="col-md-6">
-          <label class="form-label fw-semibold text-secondary">Especialidad Requerida</label>
-          <select class="form-select form-select-lg bg-light-custom" (change)="seleccionarEspecialidad($event)">
-            <option value="">-- Seleccione una especialidad --</option>
-            @for (esp of pacienteService.especialidades(); track esp.id) {
-              <option [value]="esp.id" [selected]="idEspecialidadSeleccionada() === esp.id">{{ esp.nombre }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label fw-semibold text-secondary">Médico Especialista</label>
-          <select class="form-select form-select-lg bg-light-custom" [disabled]="!idEspecialidadSeleccionada()" (change)="seleccionarMedico($event)">
-            <option value="">-- Seleccione el profesional --</option>
-            @for (med of medicosFiltrados(); track med.id) {
-              <option [value]="med.id" [selected]="medicoSeleccionado()?.id === med.id">{{ med.nombre }}</option>
-            }
-          </select>
-        </div>
-        
-        <div class="col-12 text-end mt-4">
-          <button class="btn btn-primary btn-lg px-5 fw-bold btn-next-custom" [disabled]="!medicoSeleccionado()" (click)="cambiarPaso(1)">
-            Siguiente Paso
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (pasoActual() === 2) {
-    <div class="card border-0 shadow-sm p-4">
-      <div class="row g-4">
-        <div class="col-md-5">
-          <label class="form-label fw-semibold text-secondary">Fecha de Atención</label>
-          <input type="date" class="form-control form-control-lg bg-light-custom" (change)="seleccionarFecha($event)" [value]="fechaSeleccionada()">
-        </div>
-
-        <div class="col-md-7">
-          <label class="form-label fw-semibold text-secondary">Turnos Horarios Disponibles</label>
-          <div class="row g-2">
-            @for (hora of medicoSeleccionado()?.horariosDisponibles; track hora) {
-              <div class="col-6 col-sm-4">
-                <button class="btn w-100 py-2 btn-time-custom" 
-                  [ngClass]="horaSeleccionada() === hora ? 'btn-success text-white shadow-sm' : 'btn-outline-primary'"
-                  (click)="horaSeleccionada.set(hora)">
-                  {{ hora }} hrs
-                </button>
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="col-12 d-flex justify-content-between mt-5 pt-3 border-top">
-          <button class="btn btn-outline-secondary px-4 fw-semibold" (click)="cambiarPaso(-1)">Modificar Filtros</button>
-          <button class="btn btn-primary px-5 fw-bold btn-next-custom" [disabled]="!fechaSeleccionada() || !horaSeleccionada()" (click)="cambiarPaso(1)">
-            Revisar Confirmación
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (pasoActual() === 3) {
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card border-0 shadow-lg">
-          <div class="card-header bg-success bg-opacity-10 py-3 text-center border-0">
-            <span class="text-success fw-bold text-uppercase fs-7 font-monospace">Validación de Turno Médico</span>
-          </div>
-          <div class="card-body p-4 fs-6">
-            <div class="row py-2 mb-2 border-bottom align-items-center">
-              <div class="col-4 text-muted small fw-semibold">Especialidad:</div>
-              <div class="col-8 text-dark fw-bold">{{ nombreEspecialidadSeleccionada() }}</div>
-            </div>
-            <div class="row py-2 mb-2 border-bottom align-items-center">
-              <div class="col-4 text-muted small fw-semibold">Especialista:</div>
-              <div class="col-8 text-primary fw-bold">{{ medicoSeleccionado()?.nombre }}</div>
-            </div>
-            <div class="row py-2 mb-2 border-bottom align-items-center">
-              <div class="col-4 text-muted small fw-semibold">Fecha:</div>
-              <div class="col-8 text-dark fw-bold font-monospace">{{ fechaSeleccionada() }}</div>
-            </div>
-            <div class="row py-2 mb-3 align-items-center">
-              <div class="col-4 text-muted small fw-semibold">Hora de Cita:</div>
-              <div class="col-8 text-success fw-bold">{{ horaSeleccionada() }} hrs</div>
-            </div>
-          </div>
-          <div class="card-footer bg-light p-4 d-flex justify-content-between border-0">
-            <button class="btn btn-outline-secondary px-4 fw-semibold" (click)="cambiarPaso(-1)">Regresar</button>
-            <button class="btn btn-success px-5 fw-bold shadow" (click)="confirmarCita()">
-              Confirmar Registro
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  }
-</div> -->

@@ -1,4 +1,24 @@
-.fs-xs { font-size: 0.75rem; }
-.bg-light-custom { background-color: #f8fafc; border: 1px solid #e2e8f0; }
-.animate-fade-in { animation: fadeIn 0.25s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.history-item {
+  border-color: #e2e8f0 !important;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-1px);
+  }
+}
+
+.border-dashed { border-top-style: dashed !important; }
+.tracking-wider { letter-spacing: 0.05em; }
+.fs-xs { font-size: 0.72rem; }
+.fs-sm { font-size: 0.88rem; }
+
+.animate-slide-in {
+  animation: slideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}

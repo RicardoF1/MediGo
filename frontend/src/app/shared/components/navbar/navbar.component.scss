@@ -1,0 +1,43 @@
+.shadow-xs {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+}
+
+.avatar-sm {
+  width: 34px;
+  height: 34px;
+}
+
+.nav-link {
+  transition: all 0.15s ease;
+  font-size: 0.88rem;
+  
+  &:hover {
+    color: var(--bs-primary) !important;
+    background-color: #f8fafc;
+  }
+  
+  &.active {
+    font-weight: 600 !important;
+  }
+}
+
+.fs-2xs { font-size: 0.65rem; }
+.fs-xs { font-size: 0.72rem; }
+.fs-sm { font-size: 0.85rem; }
+.tracking-tight { letter-spacing: -0.02em; }
+.tracking-wider { letter-spacing: 0.04em; }
+
+@media (max-width: 991.98px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+  .navbar-nav {
+    padding-top: 1rem;
+  }
+}

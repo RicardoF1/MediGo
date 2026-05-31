@@ -1,3 +1,42 @@
-.card {
+.kpi-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f1f5f9 !important;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03) !important;
+  }
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 10px;
 }
+
+.admin-table {
+  thead tr th {
+    border-bottom: 1px solid #e2e8f0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  tbody tr td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+}
+
+.table-row-hover {
+  transition: background-color 0.15s ease;
+  &:hover {
+    background-color: #f8fafc;
+  }
+}
+
+.fs-xs { font-size: 0.72rem; }
+.fs-sm { font-size: 0.88rem; }
+.shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.02); }

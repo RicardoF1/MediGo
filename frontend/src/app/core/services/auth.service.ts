@@ -1,66 +1,81 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
-import { User, UserRole } from '../models/user.model';
+import { Injectable, signal, computed } from '@angular/core';
+import { RolUsuario, UsuarioSesion } from '../../core/models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // 1. Signal privada para almacenar el usuario actual (Estado del servicio)
-  private _currentUser = signal<User | null>(null);
-
-  // 2. Signals públicas expuestas (Solo lectura) para ser consumidas por los componentes
-  public currentUser = this._currentUser.asReadonly();
+  // Estado maestro inmutable (Inicia en null para que pida login obligatoriamente)
+  private _usuarioLogueado = signal<UsuarioSesion | null>(null);
   
-  // 3. Signal computada: Calcula automáticamente si el usuario está autenticado
-  public isAuthenticated = computed(() => this._currentUser() !== null);
-  
-  // 4. Signal computada: Retorna el rol del usuario actual o null si no hay sesión
-  public userRole = computed(() => this._currentUser()?.role || null);
+  public usuarioLogueado = this._usuarioLogueado.asReadonly();
 
-  constructor() {
-    // Al iniciar la aplicación, verificamos si hay una sesión guardada en el navegador
-    const savedUser = localStorage.getItem('medicore_session');
-    if (savedUser) {
-      try {
-        this._currentUser.set(JSON.parse(savedUser));
-      } catch (e) {
-        localStorage.removeItem('medicore_session');
-      }
-    }
+  // ==========================================
+  // COMPATIBILIDAD CON NAVBAR Y APP COMPONENT
+  // ==========================================
 
-    // Efecto reactivo: Cada vez que _currentUser cambie, se actualiza automáticamente el localStorage
-    effect(() => {
-      const user = this._currentUser();
-      if (user) {
-        localStorage.setItem('medicore_session', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('medicore_session');
-      }
-    });
-  }
+  // 1. Reemplazo de isAuthenticated()
+  public isAuthenticated = computed(() => this._usuarioLogueado() !== null);
+
+  // 2. Reemplazo de userRole()
+  public userRole = computed(() => {
+    const rol = this._usuarioLogueado()?.rol;
+    // Mapeo estricto para mantener la compatibilidad con el Navbar viejo ('ADMIN')
+    if (rol === 'ADMINISTRADOR') return 'ADMIN';
+    return rol ?? '';
+  });
+
+  // 3. Reemplazo de currentUser()
+  public currentUser = computed(() => this._usuarioLogueado());
+
+  // 4. Mapeo de rol estricto interno
+  public rolActual = computed(() => this._usuarioLogueado()?.rol ?? null);
 
   /**
-   * Simula el inicio de sesión para el desarrollo del Frontend-First
+   * Dirección de redirección dinámica para el logotipo y el submit del Login.
+   * CORREGIDO: Apunta exactamente a tus estructuras reales sin sub-paths ficticios.
    */
-  public loginMock(role: UserRole): void {
-    const mockUser: User = {
-      id: Math.floor(Math.random() * 100),
-      username: `${role.toLowerCase()}_user`,
-      nombre: 'Usuario',
-      apellido: role,
-      email: `${role.toLowerCase()}@medicore.com`,
-      role: role,
-      token: 'mock-jwt-token-response'
-    };
-    
-    // Al actualizar esta Signal, toda la aplicación que dependa de ella se redibujará
-    this._currentUser.set(mockUser);
-  }
+  public rutaInicioPorRol = computed(() => {
+    const rol = this.rolActual();
+    switch (rol) {
+      case 'ADMINISTRADOR':
+        return '/admin/dashboard-admin'; // Redirige a la subruta declarada en admin.routes
+      case 'MEDICO':
+        return '/medico'; // Redirige al path raíz funcional de tu submódulo médico
+      case 'PACIENTE':
+        return '/paciente'; // Redirige al path raíz funcional de tu submódulo paciente
+      default:
+        return '/auth/login'; // Retorno seguro a la pasarela externa
+    }
+  });
 
   /**
-   * Cierra la sesión limpiando el estado reactivo
+   * Método de cierre de sesión requerido por el Navbar
    */
   public logout(): void {
-    this._currentUser.set(null);
+    this._usuarioLogueado.set(null);
+  }
+
+  /**
+   * Simulación del inicio de sesión para desarrollo
+   */
+  public simularLogin(nuevoRol: RolUsuario): void {
+    const nombresMocks: Record<string, string> = {
+      'ADMINISTRADOR': 'Admin General Corporativo',
+      'MEDICO': 'Dr. Carlos Mendoza Arana',
+      'PACIENTE': 'Ricardo Miguel Flores Toribio'
+    };
+
+    if (nuevoRol) {
+      this._usuarioLogueado.set({
+        id: Math.floor(Math.random() * 900) + 100,
+        nombre: nombresMocks[nuevoRol] || 'Usuario Sistema',
+        correo: `${nuevoRol.toLowerCase()}@hospital.com`,
+        rol: nuevoRol,
+        token: 'jwt-new-token-abc'
+      });
+    } else {
+      this.logout();
+    }
   }
 }
