@@ -1,9 +1,16 @@
+.avatar-placeholder {
+  width: 70px;
+  height: 70px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
 .fs-xs { font-size: 0.72rem; }
-.form-control-custom {
-  background-color: #fcfdfe;
-  border: 1px solid #e2e8f0;
-  &:focus {
-    background-color: #ffffff;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.12);
+.fs-sm { font-size: 0.88rem; }
+
+.input-group {
+  .form-control:focus {
+    border-color: #cbd5e1;
+    box-shadow: none;
+    background-color: #fbfcfd;
   }
 }

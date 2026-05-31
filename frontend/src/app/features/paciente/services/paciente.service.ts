@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Cita, MedicoUI, FichaClinicaUI } from '../models/cita.model';
+import { PerfilPaciente } from '../models/paciente.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class PacienteService {
   ]);
   public medicos = this._medicos.asReadonly();
 
-  // NUEVO: Estado Reactivo de las Fichas Clínicas (3FN)
+  // Estado Reactivo de las Fichas Clínicas (Historial)
   private _fichasClinicas = signal<FichaClinicaUI[]>([
     {
       citaId: 101,
@@ -30,10 +31,27 @@ export class PacienteService {
   ]);
   public fichasClinicas = this._fichasClinicas.asReadonly();
 
+  // Estado reactivo del perfil del paciente logueado
+  private _perfil = signal<PerfilPaciente>({
+    nombreCompleto: 'Ricardo Miguel Flores Toribio',
+    dni: '74839201',
+    correo: 'ricardo.flores@hospital.com',
+    telefono: '987654321',
+    direccion: 'Av. Las Palmeras 456, Lima',
+    contactoEmergenciaNombre: 'María Toribio',
+    contactoEmergenciaTelefono: '912345678',
+    tipoSangre: 'O+'
+  });
+  public perfil = this._perfil.asReadonly();
+
   /**
    * Transacciona de forma inmutable una nueva cita en el listado del paciente
    */
   agregarCita(nuevaCita: Cita): void {
     this._citas.update(actuales => [...actuales, nuevaCita]);
+  }
+
+  actualizarPerfil(datosActualizados: PerfilPaciente): void {
+    this._perfil.set({ ...datosActualizados });
   }
 }
