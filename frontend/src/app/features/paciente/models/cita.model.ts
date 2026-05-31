@@ -18,3 +18,10 @@ export interface MedicoUI {
   disponibilidad: string[];
   calificacion: number;
 }
+
+export interface FichaClinicaUI {
+  citaId: number;
+  diagnostico: string;
+  tratamiento: string;
+  observaciones: string;
+}

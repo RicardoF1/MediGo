@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Cita, MedicoUI } from '../models/cita.model';
+import { Cita, MedicoUI, FichaClinicaUI } from '../models/cita.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,17 @@ export class PacienteService {
     { id: 303, nombre: 'Dra. Ana Rivas Beltrán', especialidadId: 2, avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=200', disponibilidad: ['08:30', '10:30'], calificacion: 5 }
   ]);
   public medicos = this._medicos.asReadonly();
+
+  // NUEVO: Estado Reactivo de las Fichas Clínicas (3FN)
+  private _fichasClinicas = signal<FichaClinicaUI[]>([
+    {
+      citaId: 101,
+      diagnostico: 'Evolución clínica favorable. Frecuencia cardiaca en rangos normales (72 lpm). Presión arterial controlada.',
+      tratamiento: 'Losartán 50mg — 1 tableta cada 24 horas por las mañanas. Mantener dieta baja en sodio.',
+      observaciones: 'Paciente refiere adherencia al tratamiento. Próximo control requerido en 3 meses.'
+    }
+  ]);
+  public fichasClinicas = this._fichasClinicas.asReadonly();
 
   /**
    * Transacciona de forma inmutable una nueva cita en el listado del paciente

@@ -32,18 +32,3 @@ export class DashboardPacienteComponent {
     return medico ? medico.avatar : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=150';
   }
 }
-/* import { Component, inject } from '@angular/core';
-
-import { RouterLink } from '@angular/router';
-import { PacienteService } from '../../services/paciente.service';
-
-@Component({
-    selector: 'app-dashboard-paciente',
-    imports: [RouterLink],
-    templateUrl: './dashboard-paciente.component.html',
-    styleUrls: ['./dashboard-paciente.component.scss']
-})
-export class DashboardPacienteComponent {
-  // Inyectamos el servicio para tener acceso directo a la Signal de citas en el HTML
-  public pacienteService = inject(PacienteService);
-} */
