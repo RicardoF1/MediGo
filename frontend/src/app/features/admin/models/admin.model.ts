@@ -1,14 +1,18 @@
-export interface UsuarioAdmin {
-  id: number;
-  nombre: string;
-  correo: string;
-  rol: 'MEDICO' | 'PACIENTE';
-  estado: 'ACTIVO' | 'INACTIVO';
+export interface MetricasClinicaUI {
+  totalPacientesAsegurados: number;
+  totalMedicosStaff: number;
+  citasTotales: number;
+  citasAtendidas: number;
+  citasCanceladas: number;
+  eficienciaAtencion: number;
 }
 
-export interface Metricashome {
-  totalPacientes: number;
-  totalMedicos: number;
-  citasAgendadas: number;
-  eficienciaAtencion: string;
+export interface UsuarioAuditoria {
+  id: number;
+  nombreCompleto: string;
+  correo: string;
+  rol: 'ADMINISTRADOR' | 'MEDICO' | 'PACIENTE';
+  fechaRegistro: string;
+  estadoCuenta: 'ACTIVO' | 'SUSPENDIDO';
+  ultimaConexion: string;
 }
