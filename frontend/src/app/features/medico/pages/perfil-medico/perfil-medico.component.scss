@@ -1,12 +1,20 @@
-.fs-xs { 
-  font-size: 0.72rem; 
+.avatar-md {
+  width: 72px;
+  height: 72px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
 }
 
-.form-control-custom {
-  background-color: #fcfdfe;
-  border: 1px solid #e2e8f0;
-  &:focus {
-    background-color: #ffffff;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.12);
-  }
+.fs-xs { font-size: 0.72rem; }
+.fs-2xs { font-size: 0.6rem; }
+.fs-sm { font-size: 0.88rem; }
+.cursor-pointer { cursor: pointer; }
+
+.form-check-input:checked {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+.input-group .form-control:focus {
+  border-color: #cbd5e1;
+  box-shadow: none;
 }

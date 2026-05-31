@@ -1,74 +1,112 @@
 <div class="container mb-5">
+  
+  <div class="text-center mb-5">
+    <div class="d-inline-block p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+      <i class="bi bi-person-badge fs-1"></i>
+    </div>
+    <h2 class="fw-bold text-dark mb-2">Perfil del Especialista</h2>
+    <p class="text-muted">Administre su información de contacto, ubicación de consultorio y disponibilidad en el catálogo.</p>
+  </div>
+
   <div class="row g-4">
     
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm p-4 text-center bg-white">
-        <div class="mb-3 d-inline-block mx-auto">
-          <span class="fs-1 p-4 bg-primary bg-opacity-10 text-primary rounded-circle d-inline-block">🩺</span>
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white h-100">
+        <div class="bg-dark p-4 text-center text-white">
+          <div class="avatar-md mx-auto mb-3 shadow-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white">
+            <i class="bi bi-person-vcard fs-2"></i>
+          </div>
+          <h5 class="fw-bold text-white mb-1">{{ infoFija.nombreCompleto }}</h5>
+          <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-20 fs-xs py-1 px-3 rounded-pill fw-semibold">
+            {{ infoFija.especialidad }}
+          </span>
         </div>
-        <h4 class="fw-bold text-dark mb-1">Dr. {{ authService.currentUser()?.nombre }} {{ authService.currentUser()?.apellido }}</h4>
-        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 mb-3 px-3 py-2">
-          Cardiólogo Especialista
-        </span>
-        <hr>
-        <div class="text-start small text-muted">
-          <div class="mb-2"><strong>Colegiatura (CMP):</strong> <span class="font-monospace">#74859</span></div>
-          <div class="mb-2"><strong>Email Corporativo:</strong> {{ authService.currentUser()?.email }}</div>
-          <div class="mb-2"><strong>Usuario del Sistema:</strong> {{ authService.currentUser()?.username }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-8">
-      
-      <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
-        <h5 class="fw-bold text-secondary mb-3">🎓 Credenciales y Asignación Institucional</h5>
-        <div class="row g-3">
-          <div class="col-sm-6 bg-light p-3 rounded-2 border-white border-2">
-            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">Centro Médico</small>
-            <span class="fw-bold text-dark fs-6">Sede Central - MediCore Huancayo</span>
-          </div>
-          <div class="col-sm-6 bg-light p-3 rounded-2 border-white border-2">
-            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">RNE (Especialidad)</small>
-            <span class="fw-bold text-success font-monospace fs-6">#039482</span>
-          </div>
-          <div class="col-12 bg-light p-3 rounded-2 border-white border-2">
-            <small class="text-muted d-block text-uppercase font-monospace fw-semibold fs-xs">Horario de Guardia Regular</small>
-            <span class="text-dark small fw-semibold">Lunes a Viernes: 08:00 hrs - 13:00 hrs / 14:00 hrs - 18:00 hrs</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="card border-0 shadow-sm p-4 bg-white">
-        <h5 class="fw-bold text-secondary mb-3">⚙️ Configuración del Entorno Clínico</h5>
-        <div class="row g-3">
-          <div class="col-sm-6">
-            <label class="form-label small fw-semibold text-muted">Ambiente / Consultorio Físico</label>
-            <input type="text" class="form-control form-control-custom" [ngModel]="consultorio()" (ngModelChange)="consultorio.set($event)">
-          </div>
-          <div class="col-sm-6">
-            <label class="form-label small fw-semibold text-muted">Teléfono de Anexo / Contacto</label>
-            <input type="text" class="form-control form-control-custom" [ngModel]="telefonoContacto()" (ngModelChange)="telefonoContacto.set($event)">
+        
+        <div class="card-body p-4">
+          <div class="d-flex flex-column gap-3">
+            <div class="d-flex justify-content-between border-bottom pb-2">
+              <span class="text-muted small"><i class="bi bi-shield-check me-2"></i>N° Colegiatura</span>
+              <span class="fw-bold text-dark font-monospace fs-sm">{{ infoFija.colegiatura }}</span>
+            </div>
+            <div class="d-flex justify-content-between border-bottom pb-2">
+              <span class="text-muted small"><i class="bi bi-envelope me-2"></i>Correo Corporativo</span>
+              <span class="fw-semibold text-dark fs-sm">{{ infoFija.correo }}</span>
+            </div>
           </div>
           
-          <div class="col-12 mt-4 bg-light p-3 rounded-3 d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="fw-bold text-dark mb-0">Estado de Alerta de Emergencias</h6>
-              <small class="text-muted">Permitir que el centro de control le asigne pacientes críticos fuera de agenda.</small>
-            </div>
-            <div class="form-check form-switch fs-4">
-              <input class="form-check-input" type="checkbox" role="switch" [checked]="estadoDisponibilidad()" (change)="estadoDisponibilidad.set(!estadoDisponibilidad())">
-            </div>
-          </div>
-
-          <div class="col-12 text-end mt-4">
-            <button (click)="guardarConfiguracion()" class="btn btn-primary fw-bold shadow-sm px-4">
-              Guardar Configuración
-            </button>
+          <div class="mt-4 p-3 rounded-3 text-center transition-all"
+               [ngClass]="activoParaCitas() ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'">
+            <small class="text-muted d-block fs-xs mb-1">Estado de Recepción</small>
+            <span class="small fw-bold">
+              <i class="bi" [ngClass]="activoParaCitas() ? 'bi-circle-fill fs-2xs me-1' : 'bi-dash-circle-fill me-1'"></i>
+              {{ activoParaCitas() ? 'Disponible para Citas' : 'Agenda Cerrada Temporalmente' }}
+            </span>
           </div>
         </div>
       </div>
-
     </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+        <h5 class="fw-bold text-dark mb-4">
+          <i class="bi bi-sliders text-secondary me-2"></i>Configuración de Datos Profesionales
+        </h5>
+
+        <form (ngSubmit)="guardarPerfil()" novalidate>
+          <div class="row g-3">
+            
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-muted">Teléfono de Consultas</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone"></i></span>
+                <input type="text" class="form-control border-start-0"
+                       [class.is-invalid]="!esTelefonoValido() && telefono().length > 0"
+                       [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" name="telefono">
+              </div>
+              @if (!esTelefonoValido() && telefono().length > 0) {
+                <div class="text-danger fs-xs mt-1"><i class="bi bi-exclamation-circle me-1"></i>Debe tener 9 dígitos numéricos.</div>
+              }
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-muted">Asignación de Consultorio</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-building"></i></span>
+                <input type="text" class="form-control border-start-0"
+                       [class.is-invalid]="!esConsultorioValido() && consultorio().length > 0"
+                       [ngModel]="consultorio()" (ngModelChange)="consultorio.set($event)" name="consultorio">
+              </div>
+              @if (!esConsultorioValido() && consultorio().length > 0) {
+                <div class="text-danger fs-xs mt-1"><i class="bi bi-exclamation-circle me-1"></i>Escriba la ubicación completa.</div>
+              }
+            </div>
+
+            <div class="col-12 mt-4">
+              <div class="p-3 border rounded-3 bg-light bg-opacity-50">
+                <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0">
+                  <div>
+                    <label class="form-check-label fw-bold text-dark mb-0 d-block" for="switchDispo">Visibilidad en Agenda</label>
+                    <small class="text-muted">Permite que los pacientes puedan seleccionarlo y agendar turnos desde el portal.</small>
+                  </div>
+                  <input class="form-check-input cursor-pointer fs-4 ms-2" type="checkbox" role="switch" id="switchDispo"
+                         [checked]="activoParaCitas()" 
+                         (change)="activoParaCitas.set(!activoParaCitas())">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="text-end mt-5 pt-3 border-top">
+            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm"
+                    [disabled]="!esFormularioValido() || !tieneCambios()">
+              <i class="bi bi-check-all me-1 fs-5"></i> Actualizar Datos Clínicos
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
   </div>
 </div>
