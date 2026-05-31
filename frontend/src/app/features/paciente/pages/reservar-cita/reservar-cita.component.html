@@ -1,4 +1,157 @@
 <div class="container mb-5">
+  
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-dark mb-2">Agendamiento de Citas Médicas</h2>
+    <p class="text-muted">Proceso optimizado de reserva médica institucional.</p>
+  </div>
+
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <div class="position-relative">
+        <div class="progress" style="height: 4px;">
+          <div class="progress-bar bg-primary" role="progressbar" [style.width]="((pasoActual() - 1) * 50) + '%'"></div>
+        </div>
+        <div class="position-absolute top-0 start-0 translate-middle d-flex flex-column align-items-center">
+          <span class="step-indicator shadow-sm" [ngClass]="pasoActual() >= 1 ? 'bg-primary text-white' : 'bg-white text-muted'">1</span>
+          <small class="mt-2 fw-semibold text-xs">Especialidad</small>
+        </div>
+        <div class="position-absolute top-0 start-50 translate-middle d-flex flex-column align-items-center">
+          <span class="step-indicator shadow-sm" [ngClass]="pasoActual() >= 2 ? 'bg-primary text-white' : 'bg-white text-muted'">2</span>
+          <small class="mt-2 fw-semibold text-xs">Médico Especialista</small>
+        </div>
+        <div class="position-absolute top-0 start-100 translate-middle d-flex flex-column align-items-center">
+          <span class="step-indicator shadow-sm" [ngClass]="pasoActual() >= 3 ? 'bg-primary text-white' : 'bg-white text-muted'">3</span>
+          <small class="mt-2 fw-semibold text-xs">Horario y Síntomas</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-9">
+      <div class="card border-0 shadow-sm p-4 bg-white">
+        
+        @if (pasoActual() === 1) {
+          <div class="animate-fade">
+            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">01.</span> Seleccione la especialidad médica</h5>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
+                     [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '1'}"
+                     (click)="especialidadSeleccionada.set('1')">
+                  <span class="fs-1 d-block mb-2">❤️</span>
+                  <h6 class="fw-bold text-dark mb-1">Cardiología</h6>
+                  <p class="text-muted small mb-0">Salud cardiovascular e hipertensión.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
+                     [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '2'}"
+                     (click)="especialidadSeleccionada.set('2')">
+                  <span class="fs-1 d-block mb-2">🧸</span>
+                  <h6 class="fw-bold text-dark mb-1">Pediatría</h6>
+                  <p class="text-muted small mb-0">Medicina infantil y del desarrollo.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (pasoActual() === 2) {
+          <div class="animate-fade">
+            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">02.</span> Seleccione un profesional del Staff</h5>
+            <div class="row g-3">
+              @for (medico of medicosFiltrados(); track medico.id) {
+                <div class="col-12">
+                  <div class="card border p-3 card-medico cursor-pointer transition-all"
+                       [ngClass]="{'border-primary bg-primary bg-opacity-5': medicoSeleccionadoId() === medico.id}"
+                       (click)="medicoSeleccionadoId.set(medico.id)">
+                    <div class="d-flex align-items-center gap-3">
+                      <img [src]="medico.avatar" alt="Doctor" class="rounded-circle object-fit-cover shadow-sm" style="width: 65px; height: 65px;">
+                      <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">{{ medico.nombre }}</h6>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="badge bg-light text-primary border fs-xs py-1">Colegiatura Verificada</span>
+                          <span class="text-warning small">⭐ {{ medico.calificacion }}.0</span>
+                        </div>
+                      </div>
+                      <div class="text-end">
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 py-2 px-3 fw-semibold fs-xs">Disponible</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (pasoActual() === 3) {
+          <div class="animate-fade">
+            <h5 class="fw-bold text-secondary mb-4"><span class="text-primary me-2">03.</span> Detalle de la Agenda y Síntomas</h5>
+            
+            <div class="d-flex align-items-center gap-3 bg-light p-3 rounded-3 mb-4">
+              <img [src]="infoMedicoSeleccionado()?.avatar" class="rounded-circle object-fit-cover" style="width: 45px; height: 45px;">
+              <div>
+                <small class="text-muted d-block">Médico Asignado</small>
+                <strong class="text-dark">{{ infoMedicoSeleccionado()?.nombre }}</strong>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label class="form-label small fw-semibold text-muted">Fecha elegida</label>
+                <input type="date" class="form-control" [ngModel]="fechaSeleccionada()" (ngModelChange)="fechaSeleccionada.set($event)">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label small fw-semibold text-muted">Turno de Atención</label>
+                <select class="form-select" [ngModel]="horaSeleccionada()" (ngModelChange)="horaSeleccionada.set($event)">
+                  <option value="">Seleccione un horario...</option>
+                  @for (hora of infoMedicoSeleccionado()?.disponibilidad; track hora) {
+                    <option [value]="hora">{{ hora }} hrs</option>
+                  }
+                </select>
+              </div>
+              <div class="col-12 mt-3">
+                <label class="form-label small fw-semibold text-muted">Sintomatología / Motivo</label>
+                <textarea class="form-control" rows="3" 
+                          placeholder="Escriba detalladamente sus malestares (mínimo 10 letras)..."
+                          [ngModel]="motivoConsulta()" 
+                          (ngModelChange)="motivoConsulta.set($event)"></textarea>
+                
+                @if (motivoConsulta().trim().length > 0 && motivoConsulta().trim().length < 10) {
+                  <div class="text-danger fs-xs mt-1 fw-medium animate-fade">
+                    ⚠️ Descripción muy corta. Falta ingresar caracteres para cumplir con la validación de seguridad.
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+          <button (click)="anteriorPaso()" class="btn btn-outline-secondary px-4 fw-semibold" [disabled]="pasoActual() === 1">
+            Atrás
+          </button>
+
+          @if (pasoActual() < 3) {
+            <button (click)="siguientePaso()" class="btn btn-primary px-4 fw-bold shadow-sm"
+                    [disabled]="(pasoActual() === 1 && !esPaso1Valido()) || (pasoActual() === 2 && !esPaso2Valido())">
+              Siguiente
+            </button>
+          } @else {
+            <button (click)="finalizarReserva()" class="btn btn-success px-4 fw-bold shadow-sm" [disabled]="!esPaso3Valido()">
+              Confirmar y Registrar Cita
+            </button>
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- <div class="container mb-5">
   <div class="card border-0 shadow-sm mb-4 card-header-custom">
     <div class="card-body p-4">
       <h3 class="text-primary fw-bold mb-1">Nueva Solicitud de Cita Médica</h3>
@@ -115,4 +268,4 @@
       </div>
     </div>
   }
-</div>
+</div> -->
