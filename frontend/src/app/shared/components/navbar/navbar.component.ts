@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
-  selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
-  template: `
+    selector: 'app-navbar',
+    imports: [RouterLink, RouterLinkActive],
+    template: `
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
       <div class="container">
         <a class="navbar-brand fw-bold" [routerLink]="['/']">MediCore</a>

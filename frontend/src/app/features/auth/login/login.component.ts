@@ -5,10 +5,9 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  template: `
+    selector: 'app-login',
+    imports: [CommonModule, ReactiveFormsModule],
+    template: `
     <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
       <div class="card shadow-lg border-0" style="max-width: 450px; width: 100%;">
         <div class="card-body p-5">

@@ -6,11 +6,10 @@ import { PacienteService } from '../../services/paciente.service';
 import { MedicoUI } from '../../models/cita.model';
 
 @Component({
-  selector: 'app-reservar-cita',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './reservar-cita.component.html',
-  styleUrls: ['./reservar-cita.component.scss']
+    selector: 'app-reservar-cita',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './reservar-cita.component.html',
+    styleUrls: ['./reservar-cita.component.scss']
 })
 export class ReservarCitaComponent {
   // Inyección de servicios del núcleo e infraestructura

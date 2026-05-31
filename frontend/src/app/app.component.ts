@@ -5,10 +5,9 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 import { AuthService } from './core/services/auth.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent],
-  template: `
+    selector: 'app-root',
+    imports: [RouterOutlet, NavbarComponent, FooterComponent],
+    template: `
     <div class="d-flex flex-column min-vh-100 bg-light">
       
       @if (authService.isAuthenticated()) {
@@ -24,9 +23,7 @@ import { AuthService } from './core/services/auth.service';
       }
 
     </div>
-  `,
-  //templateUrl: './app.component.html',
-  //styleUrl: './app.component.scss'
+  `
 })
 export class AppComponent {
   public authService = inject(AuthService); // Inyectamos el servicio para escuchar las Signals de sesión
