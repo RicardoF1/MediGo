@@ -1,1 +1,100 @@
-<p>login works!</p>
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="row justify-content-center w-100">
+    <div class="col-md-8 col-lg-5">
+      
+      <div class="card border-0 shadow-sm p-4 bg-white rounded-3">
+        
+        <div class="text-center mb-4 pt-2">
+          <div class="d-inline-block p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+            <i class="bi bi-shield-lock fs-2"></i>
+          </div>
+          <h3 class="fw-bold text-dark mb-1">MEDICORE</h3>
+          <p class="text-muted small">Ingrese sus credenciales para acceder de forma segura al sistema.</p>
+        </div>
+
+        @if (errorLogin()) {
+          <div class="alert alert-danger d-flex align-items-center border-0 py-2.5 fs-xs rounded-3 mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>{{ errorLogin() }}</div>
+          </div>
+        }
+
+        <form (submit)="manejarLogin($event)" novalidate>
+          
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-envelope"></i></span>
+              <input type="email" class="form-control border-start-0 fs-sm"
+                     [formField]="loginForm.email"
+                     (blur)="emailTocado.set(true)"
+                     [class.is-invalid]="emailErrores() && emailTocado()"
+                     placeholder="ejemplo@hospital.com">
+            </div>
+            @if (emailErrores() && emailTocado()) {
+              <div class="text-danger fs-xs mt-1">
+                <i class="bi bi-exclamation-circle me-1"></i>{{ emailErrores() }}
+              </div>
+            }
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label small fw-semibold text-muted mb-0">Contraseña de Seguridad</label>
+              <a href="#" class="text-primary text-decoration-none small fs-xs fw-medium">¿Olvidó su clave?</a>
+            </div>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-key"></i></span>
+              <input type="password" class="form-control border-start-0 fs-sm"
+                     [formField]="loginForm.password"
+                     (blur)="passwordTocado.set(true)"
+                     [class.is-invalid]="passwordErrores() && passwordTocado()"
+                     placeholder="••••••••">
+            </div>
+            @if (passwordErrores() && passwordTocado()) {
+              <div class="text-danger fs-xs mt-1">
+                <i class="bi bi-exclamation-circle me-1"></i>{{ passwordErrores() }}
+              </div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center mb-4"
+                  [disabled]="!esFormularioValido() || cargando()">
+            @if (cargando()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <span>Validando accesos...</span>
+            } @else {
+              <i class="bi bi-box-arrow-in-right me-2 fs-5"></i> Acceder al Portal
+            }
+          </button>
+
+          <div class="border-top pt-3">
+            <span class="d-block text-center text-muted small fw-semibold text-uppercase tracking-wider fs-2xs mb-2">
+              <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Accesos Directos de Prueba
+            </span>
+            <div class="row g-2">
+              <div class="col-4">
+                <button type="button" (click)="cargarAccesoRapido('PACIENTE')" class="btn btn-sm btn-outline-success w-100 py-1.5 fw-semibold fs-2xs text-truncate">
+                  <i class="bi bi-person me-1"></i>Paciente
+                </button>
+              </div>
+              <div class="col-4">
+                <button type="button" (click)="cargarAccesoRapido('MEDICO')" class="btn btn-sm btn-outline-primary w-100 py-1.5 fw-semibold fs-2xs text-truncate">
+                  <i class="bi bi-heart-pulse me-1"></i>Médico
+                </button>
+              </div>
+              <div class="col-4">
+                <button type="button" (click)="cargarAccesoRapido('ADMIN')" class="btn btn-sm btn-outline-dark w-100 py-1.5 fw-semibold fs-2xs text-truncate">
+                  <i class="bi bi-shield-check me-1"></i>Admin
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+      </div>
+      
+    </div>
+  </div>
+</div>

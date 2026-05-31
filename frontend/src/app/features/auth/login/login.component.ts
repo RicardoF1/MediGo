@@ -1,154 +1,110 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { form, FormField } from '@angular/forms/signals'; 
+import { AuthService } from '../../../core/services/auth.service';
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 @Component({
-    selector: 'app-login',
-    imports: [CommonModule, ReactiveFormsModule],
-    template: `
-    <div class="d-flex align-items-center justify-content-center min-vh-100 bg-light">
-      <div class="card shadow-lg border-0" style="max-width: 450px; width: 100%;">
-        <div class="card-body p-5">
-          
-          <div class="text-center mb-4">
-            <h2 class="fw-bold text-primary">MediCore</h2>
-            <p class="text-muted fs-6">Gestión de Citas Médicas</p>
-          </div>
-
-          @if (errorMessage()) {
-            <div class="alert alert-danger d-flex align-items-center py-2" role="alert">
-              <small>{{ errorMessage() }}</small>
-            </div>
-          }
-
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-            
-            <div class="mb-3">
-              <label for="email" class="form-label fw-semibold text-secondary">Correo Electrónico</label>
-              <input 
-                type="email" 
-                id="email" 
-                formControlName="email"
-                class="form-control form-control-lg" 
-                [ngClass]="{'is-invalid': isFieldInvalid('email'), 'is-valid': loginForm.get('email')?.valid}"
-                placeholder="ejemplo@medicore.com">
-              <div class="invalid-feedback">
-                Por favor, ingrese un correo electrónico válido.
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label for="password" class="form-label fw-semibold text-secondary">Contraseña</label>
-              <input 
-                type="password" 
-                id="password" 
-                formControlName="password"
-                class="form-control form-control-lg" 
-                [ngClass]="{'is-invalid': isFieldInvalid('password'), 'is-valid': loginForm.get('password')?.valid}"
-                placeholder="••••••••">
-              <div class="invalid-feedback">
-                La contraseña debe tener al menos 6 caracteres.
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              class="btn btn-primary btn-lg w-100 fw-bold shadow-sm"
-              [disabled]="isLoading() || loginForm.invalid">
-              @if (isLoading()) {
-                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Autenticando...
-              } @else {
-                Iniciar Sesión
-              }
-            </button>
-          </form>
-
-          <div class="mt-4 pt-3 border-top text-center">
-            <p class="small text-muted mb-2">Accesos rápidos de desarrollo:</p>
-            <div class="d-flex justify-content-center gap-1">
-              <button (click)="loginRapido('PACIENTE')" class="btn btn-sm btn-outline-secondary">Paciente</button>
-              <button (click)="loginRapido('MEDICO')" class="btn btn-sm btn-outline-secondary">Médico</button>
-              <button (click)="loginRapido('ADMIN')" class="btn btn-sm btn-outline-secondary">Admin</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  `
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormField], 
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
-  private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // Signals para manejar estados asíncronos y visuales localmente
-  public isLoading = signal<boolean>(false);
-  public errorMessage = signal<string | null>(null);
+  // 1. Crea el modelo de formulario con signal()
+  public loginModel = signal<LoginData>({
+    email: '',
+    password: '',
+  });
 
-  // Inicialización del formulario con validaciones estrictas
-  public loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+  // 2. Pasa el modelo a form() para crear el FieldTree
+  public loginForm = form(this.loginModel);
+
+  // Estados de control para retrasar las validaciones visuales hasta interactuar
+  public emailTocado = signal<boolean>(false);
+  public passwordTocado = signal<boolean>(false);
+
+  // Estados de carga de la UI
+  public cargando = signal<boolean>(false);
+  public errorLogin = signal<string | null>(null);
+
+  // 4. Validación leyendo los valores de los campos con .value()
+  public emailErrores = computed(() => {
+    const valor = this.loginForm.email().value().trim(); 
+    if (!valor) return 'El correo electrónico es obligatorio.';
+    
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(valor)) return 'Ingrese un formato de correo válido.';
+    
+    return null;
+  });
+
+  public passwordErrores = computed(() => {
+    const valor = this.loginForm.password().value(); 
+    if (!valor) return 'La contraseña es obligatoria.';
+    if (valor.length < 6) return 'La contraseña debe tener al menos 6 caracteres.';
+    return null;
+  });
+
+  // Estado síncrono del formulario completo
+  public esFormularioValido = computed(() => {
+    return this.emailErrores() === null && this.passwordErrores() === null;
   });
 
   /**
-   * Helper para verificar si un campo debe mostrar error visual de Bootstrap
+   * Módulo de Acceso Rápido: Inyecta datos directamente mediante las Signals del árbol
    */
-  isFieldInvalid(field: string): boolean {
-    const control = this.loginForm.get(field);
-    return !!(control && control.invalid && (control.dirty || control.touched));
+  public cargarAccesoRapido(rol: 'ADMIN' | 'MEDICO' | 'PACIENTE'): void {
+    this.errorLogin.set(null);
+    this.emailTocado.set(true);
+    this.passwordTocado.set(true);
+
+    if (rol === 'ADMIN') {
+      this.loginForm.email().value.set('admin.auditoria@hospital.com');
+      this.loginForm.password().value.set('admin12345');
+    } else if (rol === 'MEDICO') {
+      this.loginForm.email().value.set('medico.carlos@hospital.com');
+      this.loginForm.password().value.set('medico12345');
+    } else if (rol === 'PACIENTE') {
+      this.loginForm.email().value.set('ricardo.flores@hospital.com');
+      this.loginForm.password().value.set('paciente12345');
+    }
   }
 
-  /**
-   * Manejador del envío del formulario
-   */
-  onSubmit(): void {
-    if (this.loginForm.invalid) return;
+  manejarLogin(event: Event): void {
+    event.preventDefault();
+    
+    this.emailTocado.set(true);
+    this.passwordTocado.set(true);
 
-    this.isLoading.set(true);
-    this.errorMessage.set(null);
+    if (!this.esFormularioValido()) return;
 
-    // Simulamos un retraso de red de 1.5 segundos (Mocking profesional)
+    this.cargando.set(true);
+    this.errorLogin.set(null);
+
     setTimeout(() => {
-      const { email, password } = this.loginForm.value;
-
-      // Validación fija para pruebas (puedes cambiarla después al conectar tu base de datos)
-      if (email === 'admin@medicore.com' && password === '123456') {
-        this.authService.loginMock('ADMIN');
-        this.isLoading.set(false);
-        this.router.navigate(['/admin']); // Cambia según la ruta
-      } else if (email === 'medico@medicore.com' && password === '123456') {
-        this.authService.loginMock('MEDICO');
-        this.isLoading.set(false);
-        this.router.navigate(['/medico']);
-      } else if (email === 'paciente@medicore.com' && password === '123456') {
-        this.authService.loginMock('PACIENTE');
-        this.isLoading.set(false);
-        this.router.navigate(['/paciente']);
+      const email = this.loginForm.email().value().toLowerCase().trim();
+      
+      if (email.includes('admin')) {
+        this.authService.simularLogin('ADMINISTRADOR');
+      } else if (email.includes('medico') || email.includes('carlos')) {
+        this.authService.simularLogin('MEDICO');
       } else {
-        this.isLoading.set(false);
-        this.errorMessage.set('Credenciales incorrectas. Pruebe con las credenciales de desarrollo.');
+        this.authService.simularLogin('PACIENTE');
       }
-    }, 1500);
-  }
 
-  /**
-   * Acceso rápido para agilizar las pruebas del profesor y del equipo de desarrollo
-   */
-  loginRapido(role: 'PACIENTE' | 'MEDICO' | 'ADMIN'): void {
-    this.authService.loginMock(role);
-    this.router.navigate([`/${role.toLowerCase()}`]);
+      this.cargando.set(false);
+      this.router.navigateByUrl(this.authService.rutaInicioPorRol());
+    }, 1200);
   }
 }
-
-/* @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styles: ``
-}) */
