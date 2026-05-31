@@ -4,11 +4,10 @@ import { PacienteService } from '../../services/paciente.service';
 import { Cita } from '../../models/cita.model';
 
 @Component({
-  selector: 'app-historial-citas',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './historial-citas.component.html',
-  styleUrls: ['./historial-citas.component.scss']
+    selector: 'app-historial-citas',
+    imports: [CommonModule],
+    templateUrl: './historial-citas.component.html',
+    styleUrls: ['./historial-citas.component.scss']
 })
 export class HistorialCitasComponent {
   public pacienteService = inject(PacienteService);

@@ -1,14 +1,13 @@
 import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-perfil-paciente',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './perfil-paciente.component.html',
-  styleUrls: ['./perfil-paciente.component.scss']
+    selector: 'app-perfil-paciente',
+    imports: [FormsModule],
+    templateUrl: './perfil-paciente.component.html',
+    styleUrls: ['./perfil-paciente.component.scss']
 })
 export class PerfilPacienteComponent {
   public authService = inject(AuthService);

@@ -5,11 +5,10 @@ import { CitaMedico } from '../../models/agenda.model';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-agenda-medico',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './agenda-medico.component.html',
-  styleUrls: ['./agenda-medico.component.scss']
+    selector: 'app-agenda-medico',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './agenda-medico.component.html',
+    styleUrls: ['./agenda-medico.component.scss']
 })
 export class AgendaMedicoComponent {
   public medicoService = inject(MedicoService);
