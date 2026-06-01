@@ -42,35 +42,3 @@
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* .card-header-custom {
-  background: #ffffff;
-}
-
-.fs-7 {
-  font-size: 0.85rem;
-}
-
-.custom-progress {
-  height: 5px;
-  border-radius: 10px;
-}
-
-.bg-light-custom {
-  background-color: #fcfdfe;
-  border: 1px solid #e2e8f0;
-  &:focus {
-    background-color: #ffffff;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-  }
-}
-
-.btn-time-custom {
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.btn-next-custom {
-  border-radius: 6px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-} */

@@ -23,7 +23,7 @@ export class PerfilPacienteComponent {
   public contactoNombre = signal<string>(this.perfilOriginal().contactoEmergenciaNombre);
   public contactoTelefono = signal<string>(this.perfilOriginal().contactoEmergenciaTelefono);
 
-  // VALIDACIONES EN TIEMPO REAL (Signal Forms Pattern)
+  // VALIDACIONES
   // Regla: Teléfonos deben tener exactamente 9 dígitos y la dirección no estar vacía.
   public esTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.telefono()));
   public esContactoTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.contactoTelefono()));
@@ -64,6 +64,6 @@ export class PerfilPacienteComponent {
     };
 
     this.pacienteService.actualizarPerfil(payload);
-    alert('💾 Datos de filiación y contacto actualizados exitosamente en el sistema.');
+    alert('Datos de filiación y contacto actualizados exitosamente en el sistema.');
   }
 }

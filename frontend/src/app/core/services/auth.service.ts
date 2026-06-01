@@ -10,48 +10,39 @@ export class AuthService {
   
   public usuarioLogueado = this._usuarioLogueado.asReadonly();
 
-  // ==========================================
-  // COMPATIBILIDAD CON NAVBAR Y APP COMPONENT
-  // ==========================================
 
-  // 1. Reemplazo de isAuthenticated()
   public isAuthenticated = computed(() => this._usuarioLogueado() !== null);
 
-  // 2. Reemplazo de userRole()
+  
   public userRole = computed(() => {
     const rol = this._usuarioLogueado()?.rol;
-    // Mapeo estricto para mantener la compatibilidad con el Navbar viejo ('ADMIN')
+    
     if (rol === 'ADMINISTRADOR') return 'ADMIN';
     return rol ?? '';
   });
 
-  // 3. Reemplazo de currentUser()
+
   public currentUser = computed(() => this._usuarioLogueado());
 
-  // 4. Mapeo de rol estricto interno
+
   public rolActual = computed(() => this._usuarioLogueado()?.rol ?? null);
 
-  /**
-   * Dirección de redirección dinámica para el logotipo y el submit del Login.
-   * CORREGIDO: Apunta exactamente a tus estructuras reales sin sub-paths ficticios.
-   */
+
   public rutaInicioPorRol = computed(() => {
     const rol = this.rolActual();
     switch (rol) {
       case 'ADMINISTRADOR':
-        return '/admin/dashboard-admin'; // Redirige a la subruta declarada en admin.routes
+        return '/admin/dashboard-admin'; 
       case 'MEDICO':
-        return '/medico'; // Redirige al path raíz funcional de tu submódulo médico
+        return '/medico'; // Redirige al path raíz médico
       case 'PACIENTE':
-        return '/paciente'; // Redirige al path raíz funcional de tu submódulo paciente
+        return '/paciente'; // Redirige al path raíz paciente
       default:
-        return '/auth/login'; // Retorno seguro a la pasarela externa
+        return '/auth/login'; 
     }
   });
 
-  /**
-   * Método de cierre de sesión requerido por el Navbar
-   */
+  // Método de cierre de sesión 
   public logout(): void {
     this._usuarioLogueado.set(null);
   }
