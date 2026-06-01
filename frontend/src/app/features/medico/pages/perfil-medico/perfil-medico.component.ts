@@ -22,7 +22,7 @@ export class PerfilMedicoComponent {
   public consultorio = signal<string>(this.perfilOriginal().consultorio);
   public activoParaCitas = signal<boolean>(this.perfilOriginal().activoParaCitas);
 
-  // VALIDACIONES EN TIEMPO REAL (Signal Forms Pattern)
+  // VALIDACIONES
   public esTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.telefono()));
   public esConsultorioValido = computed(() => this.consultorio().trim().length >= 5);
 

@@ -3,11 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { form, FormField } from '@angular/forms/signals'; 
 import { AuthService } from '../../../core/services/auth.service';
+import { LoginData } from '../../../core/models/user.model';
 
-interface LoginData {
-  email: string;
-  password: string;
-}
 
 @Component({
   selector: 'app-login',
@@ -21,16 +18,16 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // 1. Crea el modelo de formulario con signal()
+  // Crear el modelo
   public loginModel = signal<LoginData>({
     email: '',
     password: '',
   });
 
-  // 2. Pasa el modelo a form() para crear el FieldTree
+  // Pasa el modelo a form() 
   public loginForm = form(this.loginModel);
 
-  // Estados de control para retrasar las validaciones visuales hasta interactuar
+  // Estados de control
   public emailTocado = signal<boolean>(false);
   public passwordTocado = signal<boolean>(false);
 
@@ -38,7 +35,7 @@ export class LoginComponent {
   public cargando = signal<boolean>(false);
   public errorLogin = signal<string | null>(null);
 
-  // 4. Validación leyendo los valores de los campos con .value()
+  // Validaciones
   public emailErrores = computed(() => {
     const valor = this.loginForm.email().value().trim(); 
     if (!valor) return 'El correo electrónico es obligatorio.';
@@ -62,7 +59,7 @@ export class LoginComponent {
   });
 
   /**
-   * Módulo de Acceso Rápido: Inyecta datos directamente mediante las Signals del árbol
+   * Módulo de Acceso Rápido
    */
   public cargarAccesoRapido(rol: 'ADMIN' | 'MEDICO' | 'PACIENTE'): void {
     this.errorLogin.set(null);

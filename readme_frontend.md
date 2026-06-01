@@ -11,7 +11,7 @@ El núcleo del frontend ha sido construido bajo las especificaciones técnicas m
 
 | Componente | Tecnología | Propósito / Beneficio |
 | :--- | :--- | :--- |
-| **Framework Base** | Angular (v19+) | Arquitectura escalable mediante *Standalone Components* |
+| **Framework Base** | Angular (v21) | Arquitectura escalable mediante *Standalone Components* |
 | **Manejo de Estado** | Angular Signals API | Reactividad nativa, óptimo rendimiento y eliminación de Zone.js |
 | **Estilos y Layout** | Bootstrap 5 + SCSS | Diseño responsivo, consistencia visual y rejilla adaptativa profesional |
 | **Componentes de UI** | @ng-bootstrap/ng-bootstrap | Componentes interactivos nativos integrados al ciclo de vida de Angular |

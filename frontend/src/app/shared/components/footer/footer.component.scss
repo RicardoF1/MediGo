@@ -5,22 +5,20 @@
   font-size: 1rem;
 }
 
-// Forzar visibilidad y transiciones suaves en los hipervínculos del footer
 .footer-link {
-  color: #94a3b8 !important; // Gris claro premium con alto contraste
+  color: #94a3b8 !important;
   transition: color 0.15s ease, padding-left 0.15s ease;
   display: inline-block;
   
   &:hover {
-    color: var(--bs-primary) !important; // Cambia al azul corporativo en hover
+    color: var(--bs-primary) !important; 
     padding-left: 4px;
   }
 }
 
-// Forzar que los textos descriptivos ordinarios sean legibles
 p.text-muted, 
 span.text-muted {
-  color: #cbd5e1 !important; // Gris intermedio/claro altamente legible sobre fondo negro
+  color: #cbd5e1 !important; 
 }
 
 // Clases de utilidad de tamaño y espaciado optimizados
