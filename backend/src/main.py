@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.core.database import supabase  # Importamos el cliente conectado
+from src.apis.auth_api import router as auth_router
 
 app = FastAPI(
     title="MEDICORE API",
@@ -16,18 +16,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Registramos las rutas del módulo de autenticación
+app.include_router(auth_router)
+
 @app.get("/")
-def test_supabase_connection():
-    try:
-        # Intentamos hacer una consulta rápida a la tabla roles
-        response = supabase.table("roles").select("*").execute()
-        
-        return {
-            "status": "Conexión Exitosa con Supabase 🚀",
-            "datos_recibidos": response.data
-        }
-    except Exception as e:
-        return {
-            "status": "Error de Conexión ❌",
-            "detalle": str(e)
-        }
+def read_root():
+    return {"status": "online", "modulo": "MEDICORE API"}
