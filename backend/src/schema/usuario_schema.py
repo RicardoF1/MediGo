@@ -16,7 +16,7 @@ class UsuarioResponse(BaseModel):
     correo: str
     id_rol: int
     activo: bool
-    created_at: Optional[str] = None
+    creado_en: Optional[datetime] = None
 
     class Config:
         from_attributes = True

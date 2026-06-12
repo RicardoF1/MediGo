@@ -1,6 +1,5 @@
 <div class="container mb-5">
 
-  <!-- Encabezado de Gestión Operativa -->
   <div class="text-center mb-5">
     <div class="d-inline-block p-3 bg-secondary bg-opacity-10 text-secondary rounded-circle mb-3">
       <i class="bi bi-person-gear fs-1"></i>
@@ -9,37 +8,108 @@
     <p class="text-muted">Administre los privilegios de credenciales, audite conexiones y aplique suspensiones de cuentas en tiempo real.</p>
   </div>
 
-  <!-- Barra de Acciones y Filtros Reactivos -->
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <div class="btn-group bg-white p-1 rounded-3 border shadow-xs animate-fade-in" role="group">
+    <div class="btn-group bg-white p-1 rounded-3 border shadow-xs" role="group">
       <button type="button" class="btn btn-sm px-3 rounded-2"
               [ngClass]="filtroRol() === 'TODOS' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
               (click)="filtroRol.set('TODOS')">
         Todos ({{ todosLosUsuarios().length }})
       </button>
       <button type="button" class="btn btn-sm px-3 rounded-2"
-              [ngClass]="filtroRol() === 'ADMINISTRADOR' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
-              (click)="filtroRol.set('ADMINISTRADOR')">
+              [ngClass]="filtroRol() === '10' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroRol.set('10')">
         Administradores
       </button>
       <button type="button" class="btn btn-sm px-3 rounded-2"
-              [ngClass]="filtroRol() === 'MEDICO' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
-              (click)="filtroRol.set('MEDICO')">
+              [ngClass]="filtroRol() === '11' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroRol.set('11')">
         Médicos
       </button>
       <button type="button" class="btn btn-sm px-3 rounded-2"
-              [ngClass]="filtroRol() === 'PACIENTE' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
-              (click)="filtroRol.set('PACIENTE')">
+              [ngClass]="filtroRol() === '12' ? 'btn-dark' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroRol.set('12')">
         Pacientes
       </button>
     </div>
 
-    <span class="text-xs fw-bold text-uppercase text-muted tracking-wider">
-      <i class="bi bi-shield-lock-fill me-1"></i> Auditoría Activa
-    </span>
+    <button (click)="mostrarFormularioRegistro.set(!mostrarFormularioRegistro())" 
+            [disabled]="guardando()"
+            class="btn btn-primary btn-sm px-3 rounded-2 shadow-xs fw-bold">
+      <i class="bi" [ngClass]="mostrarFormularioRegistro() ? 'bi-dash-lg me-1' : 'bi-plus-lg me-1'"></i>
+      {{ mostrarFormularioRegistro() ? 'Cancelar Registro' : 'Registrar Nuevo Usuario' }}
+    </button>
   </div>
 
-  <!-- Contenedor Maestro de Tabla Administrativa -->
+  @if (mostrarFormularioRegistro()) {
+    <div class="card border-0 shadow-sm rounded-3 bg-white p-4 mb-4 animate-fade-in">
+      <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-plus-fill text-primary me-2"></i>Alta de Credenciales Médicas / Pacientes</h5>
+      <form [formGroup]="usuarioForm" (ngSubmit)="guardarNuevoUsuario()">
+        <div class="row g-3">
+          
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-muted">Nombre Completo</label>
+            <input type="text" formControlName="nombre" 
+                   class="form-control form-control-sm rounded-2" 
+                   [ngClass]="{'is-invalid': esCampoInvalido('nombre')}"
+                   placeholder="Ej. Juan Pérez">
+            @if (esCampoInvalido('nombre')) {
+              <div class="invalid-feedback text-xs">
+                El nombre es obligatorio, sin números y mínimo 4 caracteres.
+              </div>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-muted">Correo Electrónico</label>
+            <input type="email" formControlName="correo" 
+                   class="form-control form-control-sm rounded-2" 
+                   [ngClass]="{'is-invalid': esCampoInvalido('correo')}"
+                   placeholder="correo@medigo.com">
+            @if (esCampoInvalido('correo')) {
+              <div class="invalid-feedback text-xs">
+                Ingrese una dirección de correo válida.
+              </div>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-muted">Contraseña Temporal</label>
+            <input type="password" formControlName="password" 
+                   class="form-control form-control-sm rounded-2" 
+                   [ngClass]="{'is-invalid': esCampoInvalido('password')}"
+                   placeholder="******">
+            @if (esCampoInvalido('password')) {
+              <div class="invalid-feedback text-xs">
+                Debe contener mínimo 6 caracteres, incluyendo letras y números.
+              </div>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold text-muted">Rol del Sistema</label>
+            <select formControlName="id_rol" class="form-select form-select-sm rounded-2">
+              <option [value]="10">Administrador</option>
+              <option [value]="11">Médico</option>
+              <option [value]="12">Paciente</option>
+            </select>
+          </div>
+
+          <div class="col-md-8 d-flex align-items-end justify-content-end">
+            <button type="submit" [disabled]="usuarioForm.invalid || guardando()" 
+                    class="btn btn-success btn-sm px-4 fw-bold text-white rounded-2 shadow-xs">
+              @if (guardando()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Procesando...
+              } @else {
+                <i class="bi bi-check-circle-fill me-1"></i> Guardar en Base de Datos
+              }
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+
   <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
     <div class="table-responsive">
       <table class="table align-middle master-table mb-0">
@@ -48,35 +118,31 @@
             <th scope="col" class="ps-4">Identidad del Usuario</th>
             <th scope="col">Rol Asignado</th>
             <th scope="col">Fecha Registro</th>
-            <th scope="col">Último Acceso</th>
             <th scope="col">Estado</th>
             <th scope="col" class="text-end pe-4">Acciones de Seguridad</th>
           </tr>
         </thead>
         <tbody>
-          @for (user of usuariosFiltrados(); track user.id) {
+          @for (user of usuariosFiltrados(); track user.id_usuario) {
             <tr class="table-row-hover">
               <td class="ps-4">
                 <div>
-                  <span class="fw-bold text-dark fs-sm d-block">{{ user.nombreCompleto }}</span>
+                  <span class="fw-bold text-dark fs-sm d-block">{{ user.nombre }}</span>
                   <small class="text-muted text-xs font-monospace">{{ user.correo }}</small>
                 </div>
               </td>
               <td>
-                @if (user.rol === 'ADMINISTRADOR') {
+                @if (user.id_rol === 10) {
                   <span class="badge bg-dark text-white py-1 px-2.5 rounded-2 fs-2xs fw-bold tracking-wider">ADMIN</span>
-                } @else if (user.rol === 'MEDICO') {
+                } @else if (user.id_rol === 11) {
                   <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 py-1 px-2.5 rounded-2 fs-2xs fw-bold tracking-wider">MÉDICO</span>
                 } @else {
                   <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 py-1 px-2.5 rounded-2 fs-2xs fw-bold tracking-wider">PACIENTE</span>
                 }
               </td>
-              <td class="text-secondary fs-sm">{{ user.fechaRegistro }}</td>
-              <td class="text-dark font-monospace fs-sm">
-                <i class="bi bi-clock-history text-muted me-1.5"></i>{{ user.ultimaConexion }}
-              </td>
+              <td class="text-secondary fs-sm">{{ user.creado_en ? (user.creado_en | date:'yyyy-MM-dd HH:mm') : 'Sin fecha' }}</td>
               <td>
-                @if (user.estadoCuenta === 'ACTIVO') {
+                @if (user.activo) {
                   <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 py-1 px-3 rounded-pill fw-semibold fs-xs">
                     Activa
                   </span>
@@ -87,13 +153,12 @@
                 }
               </td>
               <td class="text-end pe-4">
-                <!-- Evitamos que el propio administrador del mock se auto-bloquee por seguridad -->
-                @if (user.rol !== 'ADMINISTRADOR') {
-                  <button (click)="cambiarEstadoAcceso(user.id)" 
+                @if (user.id_rol !== 10) {
+                  <button (click)="cambiarEstadoAcceso(user.id_usuario)" 
                           class="btn btn-sm px-3 fs-xs fw-bold transition-all shadow-xs"
-                          [ngClass]="user.estadoCuenta === 'ACTIVO' ? 'btn-outline-danger' : 'btn-success text-white'">
-                    <i class="bi" [ngClass]="user.estadoCuenta === 'ACTIVO' ? 'bi-lock-fill me-1' : 'bi-unlock-fill me-1'"></i>
-                    {{ user.estadoCuenta === 'ACTIVO' ? 'Suspender' : 'Reactivar' }}
+                          [ngClass]="user.activo ? 'btn-outline-danger' : 'btn-success text-white'">
+                    <i class="bi" [ngClass]="user.activo ? 'bi-lock-fill me-1' : 'bi-unlock-fill me-1'"></i>
+                    {{ user.activo ? 'Suspender' : 'Reactivar' }}
                   </button>
                 } @else {
                   <span class="text-muted fs-xs fw-medium italic text-opacity-50">Acceso Maestro Protegido</span>
@@ -102,7 +167,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="text-center py-5 text-muted">
+              <td colspan="5" class="text-center py-5 text-muted">
                 <i class="bi bi-person-x fs-1 opacity-50 d-block mb-2"></i>
                 <p class="mb-0 small fw-medium">No se detectaron usuarios bajo el segmento seleccionado.</p>
               </td>

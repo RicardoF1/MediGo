@@ -20,8 +20,9 @@ class UsuarioRepository:
         return resultado.data[0]
 
     def crear_usuario(self, datos_usuario: dict) -> dict:
-        # Inserta el nuevo usuario en Supabase
+        # Inserta el nuevo usuario
         resultado = supabase.table("usuarios") \
             .insert(datos_usuario) \
+            .select("id_usuario, nombre, correo, id_rol, activo, creado_en") \
             .execute()
         return resultado.data[0]
