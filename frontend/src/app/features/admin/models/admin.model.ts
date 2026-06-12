@@ -16,3 +16,4 @@ export interface UsuarioAuditoria {
   estadoCuenta: 'ACTIVO' | 'SUSPENDIDO';
   ultimaConexion: string;
 }
+

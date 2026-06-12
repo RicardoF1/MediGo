@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.apis.auth_api import router as auth_router
+from src.apis.usuario_api import router as usuario_router  # <-- IMPORTAMOS
 
 app = FastAPI(
     title="MEDICORE API",
@@ -16,9 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Registramos las rutas del módulo de autenticación
+# Registro de rutas
 app.include_router(auth_router)
-
+app.include_router(usuario_router)  
 @app.get("/")
 def read_root():
     return {"status": "online", "modulo": "MEDICORE API"}
