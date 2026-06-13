@@ -1,10 +1,13 @@
 export interface PerfilPaciente {
+  idPaciente?: number;
   nombreCompleto: string;
   dni: string;
+  fechaNacimiento?: string;
   correo: string;
   telefono: string;
-  direccion: string;
+  direccionResidencia: string; 
   contactoEmergenciaNombre: string;
   contactoEmergenciaTelefono: string;
-  tipoSangre: string;
+  grupoSanguineo: string; 
+  historialClinicoNum?: string;
 }

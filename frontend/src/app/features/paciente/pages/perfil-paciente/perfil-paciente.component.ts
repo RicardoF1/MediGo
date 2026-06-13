@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PacienteService } from '../../services/paciente.service';
@@ -11,26 +11,39 @@ import { PerfilPaciente } from '../../models/paciente.model';
   templateUrl: './perfil-paciente.component.html',
   styleUrls: ['./perfil-paciente.component.scss']
 })
-export class PerfilPacienteComponent {
+export class PerfilPacienteComponent implements OnInit {
   private pacienteService = inject(PacienteService);
+  public perfilOriginal = this.pacienteService.perfil;
 
-  // Datos originales guardados en el servicio
-  private perfilOriginal = this.pacienteService.perfil;
+  // SIGNAL FORMS: Inicialización segura para enlazado en vistas
+  public telefono = signal<string>('');
+  public direccionResidencia = signal<string>('');
+  public contactoNombre = signal<string>('');
+  public contactoTelefono = signal<string>('');
 
-  // SIGNAL FORMS: Estados independientes para los campos editables del formulario
-  public telefono = signal<string>(this.perfilOriginal().telefono);
-  public direccion = signal<string>(this.perfilOriginal().direccion);
-  public contactoNombre = signal<string>(this.perfilOriginal().contactoEmergenciaNombre);
-  public contactoTelefono = signal<string>(this.perfilOriginal().contactoEmergenciaTelefono);
+  constructor() {
+    // Escucha de manera reactiva la respuesta asíncrona del backend
+    effect(() => {
+      const datos = this.perfilOriginal();
+      if (datos) {
+        this.telefono.set(datos.telefono || '');
+        this.direccionResidencia.set(datos.direccionResidencia || '');
+        this.contactoNombre.set(datos.contactoEmergenciaNombre || '');
+        this.contactoTelefono.set(datos.contactoEmergenciaTelefono || '');
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    this.pacienteService.cargarPerfil();
+  }
 
   // VALIDACIONES
-  // Regla: Teléfonos deben tener exactamente 9 dígitos y la dirección no estar vacía.
   public esTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.telefono()));
   public esContactoTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.contactoTelefono()));
-  public esDireccionValida = computed(() => this.direccion().trim().length >= 8);
+  public esDireccionValida = computed(() => this.direccionResidencia().trim().length >= 8);
   public esContactoNombreValido = computed(() => this.contactoNombre().trim().length >= 3);
 
-  // Validación global del formulario unificada
   public esFormularioValido = computed(() => 
     this.esTelefonoValido() && 
     this.esContactoTelefonoValido() && 
@@ -38,32 +51,38 @@ export class PerfilPacienteComponent {
     this.esContactoNombreValido()
   );
 
-  // COMPUTED: Detecta si el usuario realmente modificó algún dato frente al original
+  // DETECCIÓN DE CAMBIOS REALES CONTRA LA BASE DE DATOS
   public tieneCambios = computed(() => {
-    return this.telefono() !== this.perfilOriginal().telefono ||
-           this.direccion() !== this.perfilOriginal().direccion ||
-           this.contactoNombre() !== this.perfilOriginal().contactoEmergenciaNombre ||
-           this.contactoTelefono() !== this.perfilOriginal().contactoEmergenciaTelefono;
+    const original = this.perfilOriginal();
+    if (!original) return false;
+
+    return this.telefono() !== original.telefono ||
+           this.direccionResidencia() !== original.direccionResidencia ||
+           this.contactoNombre() !== original.contactoEmergenciaNombre ||
+           this.contactoTelefono() !== original.contactoEmergenciaTelefono;
   });
 
-  // Getter directo para los campos de solo lectura informativos
   public get infoInmutable() {
-    return this.perfilOriginal();
+    return this.perfilOriginal() || {
+      nombreCompleto: 'Cargando Paciente...',
+      dni: '.........',
+      correo: '...',
+      grupoSanguineo: 'O+'
+    };
   }
 
   guardarCambios(): void {
-    if (!this.esFormularioValido() || !this.tieneCambios()) return;
+    const original = this.perfilOriginal();
+    if (!this.esFormularioValido() || !this.tieneCambios() || !original) return;
 
-    // Estructuramos el payload combinando lo inmutable con las señales editadas
     const payload: PerfilPaciente = {
-      ...this.perfilOriginal(),
+      ...original,
       telefono: this.telefono(),
-      direccion: this.direccion(),
+      direccionResidencia: this.direccionResidencia(),
       contactoEmergenciaNombre: this.contactoNombre(),
       contactoEmergenciaTelefono: this.contactoTelefono()
     };
 
     this.pacienteService.actualizarPerfil(payload);
-    alert('Datos de filiación y contacto actualizados exitosamente en el sistema.');
   }
 }

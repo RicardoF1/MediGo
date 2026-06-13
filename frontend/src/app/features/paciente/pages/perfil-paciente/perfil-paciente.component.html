@@ -8,129 +8,129 @@
     <p class="text-muted">Actualice su información de contacto y revise sus credenciales de asegurado.</p>
   </div>
 
-  <div class="row g-4">
-    
-    <!-- COLUMNA IZQUIERDA: CREDENCIAL DE ASEGURADO (SOLO LECTURA) -->
-    <div class="col-lg-4">
-      <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white h-100">
-        <div class="bg-dark p-4 text-center text-white position-relative">
-          <div class="avatar-placeholder mx-auto mb-3 shadow-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white">
-            <i class="bi bi-person-fill fs-2"></i>
-          </div>
-          <h5 class="fw-bold text-white mb-1">{{ infoInmutable.nombreCompleto }}</h5>
-          <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-20 fs-xs py-1 px-3 rounded-pill">
-            Asegurado Titular
-          </span>
-        </div>
-        
-        <div class="card-body p-4">
-          <div class="d-flex flex-column gap-3">
-            <div class="d-flex justify-content-between border-bottom pb-2">
-              <span class="text-muted small"><i class="bi bi-card-text me-2"></i>Documento (DNI)</span>
-              <span class="fw-semibold text-dark fs-sm">{{ infoInmutable.dni }}</span>
+  @if (perfilOriginal()) {
+    <div class="row g-4 animate__animated animate__fadeIn">
+      
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white h-100">
+          <div class="bg-dark p-4 text-center text-white">
+            <div class="avatar-placeholder mx-auto mb-3 shadow-sm bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white">
+              <i class="bi bi-person-fill fs-2"></i>
             </div>
-            <div class="d-flex justify-content-between border-bottom pb-2">
-              <span class="text-muted small"><i class="bi bi-envelope me-2"></i>Correo Institucional</span>
-              <span class="fw-semibold text-dark fs-sm">{{ infoInmutable.correo }}</span>
-            </div>
-            <div class="d-flex justify-content-between border-bottom pb-2">
-              <span class="text-muted small"><i class="bi bi-droplet-fill text-danger me-2"></i>Grupo Sanguíneo</span>
-              <span class="badge bg-danger bg-opacity-10 text-danger border px-2 py-1 fs-xs fw-bold">{{ infoInmutable.tipoSangre }}</span>
-            </div>
+            <h5 class="fw-bold text-white mb-1">{{ infoInmutable.nombreCompleto }}</h5>
+            <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-20 fs-xs py-1 px-3 rounded-pill">
+              Asegurado Titular
+            </span>
           </div>
           
-          <div class="mt-4 p-3 bg-light rounded-3 text-center">
-            <small class="text-muted d-block fs-xs mb-1">Estado de Afiliación</small>
-            <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Vigente y Activo</span>
+          <div class="card-body p-4">
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex justify-content-between border-bottom pb-2">
+                <span class="text-muted small"><i class="bi bi-card-text me-2"></i>Documento (DNI)</span>
+                <span class="fw-semibold text-dark fs-sm">{{ infoInmutable.dni }}</span>
+              </div>
+              <div class="d-flex justify-content-between border-bottom pb-2">
+                <span class="text-muted small"><i class="bi bi-envelope me-2"></i>Correo Institucional</span>
+                <span class="fw-semibold text-dark fs-sm text-break">{{ infoInmutable.correo }}</span>
+              </div>
+              <div class="d-flex justify-content-between border-bottom pb-2">
+                <span class="text-muted small"><i class="bi bi-droplet-fill text-danger me-2"></i>Grupo Sanguíneo</span>
+                <span class="badge bg-danger bg-opacity-10 text-danger border px-2 py-1 fs-xs fw-bold">{{ infoInmutable.grupoSanguineo }}</span>
+              </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-light rounded-3 text-center">
+              <small class="text-muted d-block fs-xs mb-1">Estado de Afiliación</small>
+              <span class="text-success small fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Vigente y Activo</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- COLUMNA DERECHA: FORMULARIO REACTIVO (SIGNAL FORMS) -->
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
-        <h5 class="fw-bold text-dark mb-4">
-          <i class="bi bi-pencil-square text-secondary me-2"></i>Datos de Contacto y Emergencia
-        </h5>
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+          <h5 class="fw-bold text-dark mb-4">
+            <i class="bi bi-pencil-square text-secondary me-2"></i>Datos de Contacto y Emergencia
+          </h5>
 
-        <form (ngSubmit)="guardarCambios()" novalidate>
-          <div class="row g-3">
-            
-            <!-- Fila 1: Teléfono Personal -->
-            <div class="col-md-6">
-              <label class="form-label small fw-semibold text-muted">Teléfono Móvil</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-phone"></i></span>
-                <input type="text" class="form-control border-start-0"
-                       [class.is-invalid]="!esTelefonoValido() && telefono().length > 0"
-                       [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" name="telefono">
+          <form (ngSubmit)="guardarCambios()" novalidate>
+            <div class="row g-3">
+              
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-muted">Teléfono Móvil</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-phone"></i></span>
+                  <input type="text" class="form-control border-start-0"
+                         [class.is-invalid]="!esTelefonoValido() && telefono().length > 0"
+                         [ngModel]="telefono()" (ngModelChange)="telefono.set($event)" name="telefono">
+                </div>
+                @if (!esTelefonoValido() && telefono().length > 0) {
+                  <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>El número debe tener exactamente 9 dígitos.</div>
+                }
               </div>
-              @if (!esTelefonoValido() && telefono().length > 0) {
-                <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>El número debe tener exactamente 9 dígitos.</div>
-              }
-            </div>
 
-            <!-- Fila 1: Dirección Domiciaria -->
-            <div class="col-md-6">
-              <label class="form-label small fw-semibold text-muted">Dirección de Residencia</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-geo-alt"></i></span>
-                <input type="text" class="form-control border-start-0"
-                       [class.is-invalid]="!esDireccionValida() && direccion().length > 0"
-                       [ngModel]="direccion()" (ngModelChange)="direccion.set($event)" name="direccion">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-muted">Dirección de Residencia</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-geo-alt"></i></span>
+                  <input type="text" class="form-control border-start-0"
+                         [class.is-invalid]="!esDireccionValida() && direccionResidencia().length > 0"
+                         [ngModel]="direccionResidencia()" (ngModelChange)="direccionResidencia.set($event)" name="direccionResidencia">
+                </div>
+                @if (!esDireccionValida() && direccionResidencia().length > 0) {
+                  <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Ingrese una dirección real (Mínimo 8 letras).</div>
+                }
               </div>
-              @if (!esDireccionValida() && direccion().length > 0) {
-                <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Ingrese una dirección real (Mínimo 8 letras).</div>
-              }
-            </div>
 
-            <div class="col-12 my-3">
-              <hr class="text-muted opacity-20">
-              <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-heart-pulse me-2"></i>En Caso de Emergencia Notificar A:</h6>
-            </div>
-
-            <!-- Fila 2: Nombre de Contacto -->
-            <div class="col-md-6">
-              <label class="form-label small fw-semibold text-muted">Nombre del Familiar / Contacto</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person"></i></span>
-                <input type="text" class="form-control border-start-0"
-                       [class.is-invalid]="!esContactoNombreValido() && contactoNombre().length > 0"
-                       [ngModel]="contactoNombre()" (ngModelChange)="contactoNombre.set($event)" name="contactoNombre">
+              <div class="col-12 my-3">
+                <hr class="text-muted opacity-20">
+                <h6 class="fw-bold text-secondary mb-3"><i class="bi bi-heart-pulse me-2"></i>En Caso de Emergencia Notificar A:</h6>
               </div>
-              @if (!esContactoNombreValido() && contactoNombre().length > 0) {
-                <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Nombre muy corto.</div>
-              }
-            </div>
 
-            <!-- Fila 2: Teléfono de Contacto -->
-            <div class="col-md-6">
-              <label class="form-label small fw-semibold text-muted">Teléfono de Emergencia</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone-plus"></i></span>
-                <input type="text" class="form-control border-start-0"
-                       [class.is-invalid]="!esContactoTelefonoValido() && contactoTelefono().length > 0"
-                       [ngModel]="contactoTelefono()" (ngModelChange)="contactoTelefono.set($event)" name="contactoTelefono">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-muted">Nombre del Familiar / Contacto</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person"></i></span>
+                  <input type="text" class="form-control border-start-0"
+                         [class.is-invalid]="!esContactoNombreValido() && contactoNombre().length > 0"
+                         [ngModel]="contactoNombre()" (ngModelChange)="contactoNombre.set($event)" name="contactoNombre">
+                </div>
+                @if (!esContactoNombreValido() && contactoNombre().length > 0) {
+                  <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Nombre muy corto.</div>
+                }
               </div>
-              @if (!esContactoTelefonoValido() && contactoTelefono().length > 0) {
-                <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Debe tener exactamente 9 dígitos numéricos.</div>
-              }
+
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold text-muted">Teléfono de Emergencia</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone-plus"></i></span>
+                  <input type="text" class="form-control border-start-0"
+                         [class.is-invalid]="!esContactoTelefonoValido() && contactoTelefono().length > 0"
+                         [ngModel]="contactoTelefono()" (ngModelChange)="contactoTelefono.set($event)" name="contactoTelefono">
+                </div>
+                @if (!esContactoTelefonoValido() && contactoTelefono().length > 0) {
+                  <div class="text-danger fs-xs mt-1"><i class="bi bi-x-circle me-1"></i>Debe tener exactamente 9 dígitos numéricos.</div>
+                }
+              </div>
+
             </div>
 
-          </div>
+            <div class="text-end mt-5 pt-3 border-top">
+              <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm"
+                      [disabled]="!esFormularioValido() || !tieneCambios()">
+                <i class="bi bi-cloud-check-fill me-2"></i>Guardar Cambios de Filiación
+              </button>
+            </div>
 
-          <!-- BOTONERA DE ACCIÓN REACTIVA -->
-          <div class="text-end mt-5 pt-3 border-top">
-            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm"
-                    [disabled]="!esFormularioValido() || !tieneCambios()">
-              <i class="bi bi-cloud-check-fill me-2"></i>Guardar Cambios de Filiación
-            </button>
-          </div>
-
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
 
-  </div>
+    </div>
+  } @else {
+    <div class="text-center py-5">
+      <div class="spinner-border text-success mb-3" role="status"></div>
+      <p class="text-muted small">Descargando filiación desde Supabase...</p>
+    </div>
+  }
 </div>
