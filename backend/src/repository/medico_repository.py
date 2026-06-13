@@ -1,5 +1,5 @@
 from src.core.database import supabase
-from src.schema.medico_schema import EstadoCitaUpdate
+from src.schema.medico_schema import EstadoCitaUpdate, PerfilMedicoUpdate
 from typing import List
 
 class MedicoRepository:
@@ -52,7 +52,6 @@ class MedicoRepository:
             nombre_estado = estado_data.get("nombre_estado", "PENDIENTE") if estado_data else "PENDIENTE"
 
             # === TRADUCCIÓN CLAVE PARA EL FRONTEND ===
-            # Si en la base de datos dice COMPLETADA, se lo enviamos a Angular como ATENDIDA
             if nombre_estado == "COMPLETADA":
                 nombre_estado = "ATENDIDA"
 
@@ -62,7 +61,7 @@ class MedicoRepository:
                 "paciente_nombre": nombre_paciente,
                 "fecha": item["fecha"],
                 "hora": str(item["hora"]),  
-                "estado": nombre_estado, # Aquí ya viaja "ATENDIDA" impecable
+                "estado": nombre_estado,
                 "motivo": item["motivo"] or "Sin motivo especificado"
             })
             
@@ -73,13 +72,11 @@ class MedicoRepository:
         Actualiza el id_estado y retorna la cita completamente aplanada con 
         los nombres de las relaciones para que el Frontend se refresque al instante.
         """
-        # 1. Ejecutamos la actualización del catálogo
         supabase.table("citas") \
             .update({"id_estado": data.id_estado}) \
             .eq("id_cita", id_cita) \
             .execute()
             
-        # 2. Recuperamos esa única cita con sus cruzamientos limpios
         respuesta = supabase.table("citas") \
             .select("""
                 id_cita,
@@ -104,7 +101,6 @@ class MedicoRepository:
 
         item = respuesta.data[0]
         
-        # Aplanamos exactamente igual que en listar para mantener la consistencia
         paciente_data = item.get("pacientes", {})
         usuario_data = paciente_data.get("usuarios", {}) if paciente_data else {}
         nombre_paciente = usuario_data.get("nombre", "Paciente Desconocido") if usuario_data else "Paciente Desconocido"
@@ -124,3 +120,74 @@ class MedicoRepository:
             "estado": nombre_estado,
             "motivo": item["motivo"] or "Sin motivo especificado"
         }
+
+    # =========================================================
+    #  GESTIÓN DE PERFIL CLÍNICO
+    # =========================================================
+
+    def obtener_perfil_medico(self, id_usuario_medico: int) -> dict:
+        """
+        Recupera el perfil completo del médico cruzando la tabla 'medicos',
+        los datos core de 'usuarios' y el catálogo de 'especialidades'.
+        """
+        respuesta = supabase.table("medicos") \
+            .select("""
+                colegiatura,
+                consultorio,
+                telefono,            
+                activo_para_citas,  
+                usuarios (
+                    nombre,
+                    correo
+                ),
+                especialidades (
+                    nombre_especialidad
+                )
+            """) \
+            .eq("id_usuario", id_usuario_medico) \
+            .execute()
+
+        if not respuesta.data:
+            return {}
+
+        item = respuesta.data[0]
+        usuario_data = item.get("usuarios", {}) or {}
+        especialidad_data = item.get("especialidades", {}) or {}
+
+        return {
+            "nombreCompleto": usuario_data.get("nombre", "Médico Sistema"),
+            "colegiatura": item.get("colegiatura", "Sin Registrar"),
+            "especialidad": especialidad_data.get("nombre_especialidad", "General"),
+            "correo": usuario_data.get("correo", ""),
+            "telefono": item.get("telefono") or "",  # Muestra el teléfono real de la BD
+            "consultorio": item.get("consultorio", "No Asignado"),
+            "activoParaCitas": item.get("activo_para_citas", True) # Muestra la visibilidad real de la BD
+        }
+
+    def actualizar_perfil_medico(self, id_usuario_medico: int, data: PerfilMedicoUpdate) -> dict:
+        """
+        Modifica los datos personales existentes en la tabla 'usuarios' 
+        y la información de consultorio, colegiatura, teléfono y visibilidad en 'medicos'.
+        """
+        # 1. Actualizamos la tabla core de usuarios (nombre y correo)
+        supabase.table("usuarios") \
+            .update({
+                "nombre": data.nombreCompleto,
+                "correo": data.correo
+            }) \
+            .eq("id_usuario", id_usuario_medico) \
+            .execute()
+
+        # 2. Actualizamos la tabla médica con las nuevas columnas reales
+        supabase.table("medicos") \
+            .update({
+                "colegiatura": data.colegiatura,
+                "consultorio": data.consultorio,
+                "telefono": data.telefono,                
+                "activo_para_citas": data.activoParaCitas  
+            }) \
+            .eq("id_usuario", id_usuario_medico) \
+            .execute()
+
+        return {"status": "success", "message": "Información de perfil actualizada con éxito"}
+

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import date, time
 
 class AgendaMedicoResponse(BaseModel):
@@ -14,4 +14,23 @@ class AgendaMedicoResponse(BaseModel):
         from_attributes = True
 
 class EstadoCitaUpdate(BaseModel):
-    id_estado: int  # Pasamos el ID del catálogo estados_cita (ej. 2 para COMPLETADA, 3 para CANCELADA)
+    id_estado: int  
+
+
+class PerfilMedicoUpdate(BaseModel):
+    nombreCompleto: str
+    colegiatura: str
+    especialidad: str
+    correo: EmailStr
+    telefono: str
+    consultorio: str
+    activoParaCitas: bool
+
+class PerfilMedicoResponse(BaseModel):
+    nombreCompleto: str
+    colegiatura: str
+    especialidad: str
+    correo: EmailStr
+    telefono: str
+    consultorio: str
+    activoParaCitas: bool

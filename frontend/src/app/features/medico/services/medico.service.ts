@@ -13,15 +13,8 @@ export class MedicoService {
   private _citasAgenda = signal<CitaMedico[]>([]);
   public citasAgenda = this._citasAgenda.asReadonly();
 
-  private _perfil = signal<PerfilMedico>({
-    nombreCompleto: 'Dr. Carlos Mendoza Arana',
-    colegiatura: 'CMP-75943',
-    especialidad: 'Cardiología',
-    correo: 'carlos.mendoza@hospital.com',
-    telefono: '955412367',
-    consultorio: 'Bloque B - Piso 3 (Consultorio 302)',
-    activoParaCitas: true
-  });
+  // El perfil inicia en null hasta que se consuma el API de Supabase
+  private _perfil = signal<PerfilMedico | null>(null);
   public perfil = this._perfil.asReadonly();
 
   cargarAgenda(): void {
@@ -59,7 +52,23 @@ export class MedicoService {
       });
   }
 
+  // === MÉTODOS DINÁMICOS CONECTADOS AL BACKEND ===
+
+  cargarPerfil(): void {
+    this.http.get<PerfilMedico>(`${this.apiUrl}/perfil`).subscribe({
+      next: (perfilData) => this._perfil.set(perfilData),
+      error: (err) => console.error('Error al descargar el perfil desde Supabase:', err)
+    });
+  }
+
   actualizarPerfil(datosActualizados: PerfilMedico): void {
-    this._perfil.set({ ...datosActualizados });
+    this.http.put<{ status: string, message: string }>(`${this.apiUrl}/perfil`, datosActualizados)
+      .subscribe({
+        next: () => {
+          this._perfil.set({ ...datosActualizados });
+          
+        },
+        error: (err) => console.error('Error al persistir el perfil médico:', err)
+      });
   }
 }
