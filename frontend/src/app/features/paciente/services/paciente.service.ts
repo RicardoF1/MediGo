@@ -69,4 +69,16 @@ export class PacienteService {
         error: (err) => console.error('Error al actualizar filiación clínica:', err)
       });
   }
+
+
+  cargarHistorialReal(): void {
+    this.http.get<Cita[]>(`${this.apiCitasUrl}/historial`).subscribe({
+      next: (data) => {
+        console.log('Datos recibidos del API:', data); // <-- ABRE LA CONSOLA DEL NAVEGADOR
+        this._citas.set(data);
+      },
+      error: (err) => console.error('Error:', err)
+    });
+  }
 }
+

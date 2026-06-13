@@ -6,7 +6,7 @@ export interface Cita {
   especialidadNombre: string;
   fecha: string;
   hora: string;
-  estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA' | 'COMPLETADA';
   motivoConsulta?: string;
 }
 

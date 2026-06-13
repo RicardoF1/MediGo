@@ -1,108 +1,56 @@
 <div class="container mb-5">
-
   <div class="text-center mb-5">
     <div class="d-inline-block p-3 bg-success bg-opacity-10 text-success rounded-circle mb-3">
       <i class="bi bi-file-earmark-medical fs-1"></i>
     </div>
     <h2 class="fw-bold text-dark mb-2">Historial Clínico Digital</h2>
-    <p class="text-muted">Consulte los reportes de evolución, recetas emitidas y diagnósticos autorizados.</p>
   </div>
 
   <div class="row g-4">
-    
-    <!-- COLUMNA IZQUIERDA: LISTADO -->
-    <div class="transition-all" [ngClass]="detalleFichaActiva() ? 'col-lg-5' : 'col-12'">
+    <div class="transition-all" [ngClass]="detalleCitaActiva() ? 'col-lg-5' : 'col-12'">
       <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
-        <h5 class="fw-bold text-dark mb-4">
-          <i class="bi bi-journal-medical text-secondary me-2"></i>Registro de Atenciones
-        </h5>
-
+        <h5 class="fw-bold text-dark mb-4">Registro de Atenciones</h5>
         <div class="d-flex flex-column gap-3">
           @for (cita of historialAtendidas(); track cita.id) {
-            <div class="history-item p-3 border rounded-3 cursor-pointer transition-all"
+            <div class="history-item p-3 border rounded-3 cursor-pointer"
                  [ngClass]="{'border-primary bg-primary bg-opacity-5': citaSeleccionadaId() === cita.id}"
                  (click)="inspeccionarCita(cita.id)">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <div>
                   <h6 class="fw-bold text-dark mb-0">{{ cita.medicoNombre }}</h6>
-                  <span class="badge bg-light text-secondary border border-secondary border-opacity-10 mt-1 fs-xs">
-                    {{ cita.especialidadNombre }}
-                  </span>
+                  <span class="badge bg-light text-secondary border mt-1">{{ cita.especialidadNombre }}</span>
                 </div>
-                <span class="text-xs text-muted fw-medium">
-                  <i class="bi bi-calendar3 me-1"></i>{{ cita.fecha }}
-                </span>
+                <span class="text-xs text-muted"><i class="bi bi-calendar3 me-1"></i>{{ cita.fecha }}</span>
               </div>
-              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-dashed">
-                <span class="text-xs text-muted"><i class="bi bi-hash me-1"></i>Cita #{{ cita.id }}</span>
-                <span class="text-primary fw-bold text-xs">
-                  Ver Reporte <i class="bi bi-chevron-right ms-1"></i>
-                </span>
+              <div class="border-top mt-2 pt-2 text-primary fw-bold text-xs">
+                Ver Detalle <i class="bi bi-chevron-right"></i>
               </div>
             </div>
           } @empty {
-            <div class="text-center py-5 text-muted">
-              <i class="bi bi-folder-x fs-1 opacity-50 d-block mb-2"></i>
-              <p class="mb-0 small fw-medium">No se registran fichas ni recetas archivadas.</p>
-            </div>
+            <p class="text-center text-muted">No tienes citas registradas.</p>
           }
         </div>
       </div>
     </div>
 
-    <!-- COLUMNA DERECHA: FICHA MÉDICA DETALLADA -->
-    @if (detalleFichaActiva(); as ficha) {
+    @if (detalleCitaActiva(); as cita) {
       <div class="col-lg-7 animate-slide-in">
-        <div class="card border-0 shadow-sm rounded-3 bg-white overflow-hidden">
-          
-          <div class="card-header bg-dark text-white p-4 border-0 d-flex justify-content-between align-items-center">
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+          <div class="card-header bg-dark text-white p-4 d-flex justify-content-between">
             <div>
-              <span class="text-uppercase tracking-wider text-xs text-white text-opacity-50 fw-bold d-block mb-1">Expediente Médico Digital</span>
-              <h5 class="fw-bold mb-0 text-white">{{ ficha.especialidad }} — {{ ficha.fecha }}</h5>
+              <h5 class="fw-bold mb-0">Detalle de Consulta</h5>
+              <span>{{ cita.fecha }} - {{ cita.hora }}</span>
             </div>
-            <button (click)="cerrarDetalle()" class="btn btn-sm btn-outline-light border-0 text-white-50 fs-4">
-              <i class="bi bi-x-lg"></i>
-            </button>
+            <button (click)="cerrarDetalle()" class="btn btn-outline-light btn-sm">X</button>
           </div>
-
           <div class="card-body p-4">
-            <div class="mb-4 pb-3 border-bottom">
-              <label class="text-muted small fw-semibold text-uppercase d-block mb-1">Profesional Firmante</label>
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-person-badge text-primary fs-5"></i>
-                <span class="fw-bold text-dark">{{ ficha.medico }}</span>
-              </div>
-            </div>
-
-            <div class="mb-4 p-3 bg-light rounded-3 border-start border-primary border-3">
-              <label class="text-primary small fw-bold text-uppercase d-block mb-1">
-                <i class="bi bi-activity me-1"></i>Diagnóstico Clínico
-              </label>
-              <p class="text-dark mb-0 fs-sm lh-base">{{ ficha.diagnostica }}</p>
-            </div>
-
-            <div class="mb-4 p-3 bg-success bg-opacity-5 rounded-3 border-start border-success border-3">
-              <label class="text-success small fw-bold text-uppercase d-block mb-1 text-white">
-                <i class="bi bi-capsule me-1 text-white"></i>Tratamiento y Prescripción (Receta)
-              </label>
-              <p class="text-dark mb-0 fs-sm lh-base fw-medium text-monospace">{{ ficha.tratamiento }}</p>
-            </div>
-
-            <div class="mb-2">
-              <label class="text-muted small fw-semibold text-uppercase d-block mb-1">Indicaciones Adicionales</label>
-              <p class="text-secondary mb-0 fs-sm">{{ ficha.observaciones }}</p>
-            </div>
+            <p><strong>Médico:</strong> {{ cita.medicoNombre }}</p>
+            <p><strong>Especialidad:</strong> {{ cita.especialidadNombre }}</p>
+            <p><strong>Motivo:</strong> {{ cita.motivoConsulta }}</p>
+            <p><strong>Estado:</strong> {{ cita.estado }}</p>
           </div>
-
-          <div class="card-footer bg-light p-3 text-end border-0 px-4">
-            <button class="btn btn-sm btn-outline-secondary fw-semibold px-3" onclick="window.print()">
-              <i class="bi bi-printer me-2"></i>Imprimir Receta Médica
-            </button>
-          </div>
-
         </div>
       </div>
     }
-
   </div>
 </div>

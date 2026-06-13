@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List
-from src.schema.cita_schema import ReservaCitaRequest, ReservaCitaResponse, EspecialidadLookup, MedicoLookup
+from src.schema.cita_schema import ReservaCitaRequest, ReservaCitaResponse, EspecialidadLookup, MedicoLookup, HistorialCitaResponse
 from src.repository.cita_repository import CitaRepository
 from src.core.security import SecurityHandler
 
@@ -43,3 +43,11 @@ async def reservar_cita(payload: ReservaCitaRequest, id_usuario: int = Depends(o
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/historial", response_model=List[HistorialCitaResponse])
+async def obtener_historial(id_usuario: int = Depends(obtener_id_usuario_logeado)):
+    # Reutilizamos tu servicio
+    from src.services.cita_service import CitaService
+    service = CitaService()
+    return service.get_historial_paciente(id_usuario)

@@ -2,6 +2,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 import bcrypt
 from src.core.config import settings
+from fastapi import HTTPException, status
 
 class SecurityHandler:
     @staticmethod

@@ -24,3 +24,13 @@ class MedicoLookup(BaseModel):
     nombre: str
     avatar: str
     disponibilidad: List[str]
+
+
+class HistorialCitaResponse(BaseModel):
+    id: int              
+    fecha: str
+    hora: str
+    motivoConsulta: str   
+    nombreMedico: str
+    especialidadNombre: str 
+    estado: str

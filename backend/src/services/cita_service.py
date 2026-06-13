@@ -23,3 +23,9 @@ class CitaService:
             }
         except Exception as e:
             return {"status": "error", "message": str(e)}
+
+    def get_historial_paciente(self, id_usuario: int) -> list:
+        id_paciente = self.cita_repository.obtener_id_paciente_por_usuario(id_usuario)
+        if not id_paciente:
+            return []
+        return self.cita_repository.obtener_historial_paciente(id_paciente)

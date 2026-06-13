@@ -67,3 +67,29 @@ class CitaRepository:
             raise Exception("Error interno al insertar fila en la tabla citas.")
             
         return respuesta.data[0].get("id_cita")
+
+    def obtener_historial_paciente(self, id_paciente: int) -> list:
+        res = supabase.table("citas") \
+            .select("""
+                id_cita, id_paciente, id_medico, fecha, hora, motivo,
+                medicos!inner(
+                    usuarios!inner(nombre),
+                    especialidades!inner(nombre_especialidad)
+                ),
+                estados_cita!inner(nombre_estado)
+            """) \
+            .eq("id_paciente", id_paciente) \
+            .execute()
+
+        return [
+            {
+                "id": c["id_cita"],
+                "fecha": str(c["fecha"]),
+                "hora": c["hora"],
+                "motivoConsulta": c["motivo"], # Debe coincidir con el schema
+                "nombreMedico": c["medicos"]["usuarios"]["nombre"],
+             "especialidadNombre": c["medicos"]["especialidades"]["nombre_especialidad"],
+                "estado": c["estados_cita"]["nombre_estado"]
+            }
+            for c in res.data
+        ]
