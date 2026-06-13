@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Cita, MedicoUI, FichaClinicaUI } from '../models/cita.model';
 import { PerfilPaciente } from '../models/paciente.model';
 import { environment } from '../../../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,33 +11,46 @@ import { environment } from '../../../../environments/environment';
 export class PacienteService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/api/paciente`;
+  private apiCitasUrl = `${environment.apiUrl}/api/citas`; // URL de la API de Citas
 
-  // Mocks temporales para las otras secciones de la agenda
-  private _citas = signal<Cita[]>([
-    { id: 101, pacienteId: 1, medicoId: 302, medicoNombre: 'Dr. Carlos Mendoza Arana', especialidadNombre: 'Cardiología', fecha: '2026-06-05', hora: '10:00', estado: 'CONFIRMADA', motivoConsulta: 'Chequeo rutinario de presión' }
-  ]);
+  // === ESTADOS REACTIVOS REALES ===
+  private _citas = signal<Cita[]>([]);
   public citas = this._citas.asReadonly();
 
-  private _medicos = signal<MedicoUI[]>([
-    { id: 301, nombre: 'Dra. Sofía Castro Ortiz', especialidadId: 1, avatar: 'https://images.unsplash.com/photo-1594824813573-246434de83fb?auto=format&fit=crop&q=80&w=200', disponibilidad: ['08:00', '09:00', '11:30'], calificacion: 5 },
-    { id: 302, nombre: 'Dr. Carlos Mendoza Arana', especialidadId: 1, avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200', disponibilidad: ['10:00', '14:30', '16:00'], calificacion: 4 }
-  ]);
+  private _medicos = signal<MedicoUI[]>([]);
   public medicos = this._medicos.asReadonly();
 
-  private _fichasClinicas = signal<FichaClinicaUI[]>([
-    { citaId: 101, diagnostico: 'Evolución favorable.', tratamiento: 'Losartán 50mg.', observaciones: 'Control en 3 meses.' }
-  ]);
+  private _fichasClinicas = signal<FichaClinicaUI[]>([]);
   public fichasClinicas = this._fichasClinicas.asReadonly();
 
-  // === ESTADO REACTIVO DEL PERFIL DINÁMICO ===
   private _perfil = signal<PerfilPaciente | null>(null);
   public perfil = this._perfil.asReadonly();
+
+  // === AGENDAMIENTO REAL CON FASTAPI ===
+
+  /** Obtiene la lista de especialidades disponibles en Supabase */
+  obtenerEspecialidades(): Observable<{ idEspecialidad: number; nombreEspecialidad: string }[]> {
+    return this.http.get<{ idEspecialidad: number; nombreEspecialidad: string }[]>(`${this.apiCitasUrl}/especialidades`);
+  }
+
+  /** Descarga y actualiza el signal de médicos filtrado por especialidad */
+  cargarMedicosPorEspecialidad(especialidadId: number): void {
+    this.http.get<MedicoUI[]>(`${this.apiCitasUrl}/medicos/${especialidadId}`).subscribe({
+      next: (medicosData) => this._medicos.set(medicosData),
+      error: (err) => console.error('Error al recuperar staff médico de Supabase:', err)
+    });
+  }
+
+  /** Envía la reserva de la cita al servidor */
+  registrarCitaReal(payload: { especialidadId: number; medicoId: number; fecha: string; hora: string; motivoConsulta: string }): Observable<{ status: string; message: string; idCita: number }> {
+    return this.http.post<{ status: string; message: string; idCita: number }>(`${this.apiCitasUrl}/reservar`, payload);
+  }
+
+  // === MÉTODOS EXISTENTES DE PERFIL Y AGENDA ===
 
   agregarCita(nuevaCita: Cita): void {
     this._citas.update(actuales => [...actuales, nuevaCita]);
   }
-
-  // === PETICIONES HTTP DE PERSISTENCIA REAL ===
 
   cargarPerfil(): void {
     this.http.get<PerfilPaciente>(`${this.apiUrl}/perfil`).subscribe({

@@ -40,28 +40,31 @@
               <span class="text-primary me-2">01.</span> Seleccione la especialidad médica
             </h5>
             <div class="row g-3">
-              <div class="col-md-6">
-                <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
-                     [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '1'}"
-                     (click)="especialidadSeleccionada.set('1')">
-                  <div class="fs-1 text-danger mb-2">
-                    <i class="bi bi-heart-pulse-fill"></i>
+              
+              @for (esp of listaEspecialidades(); track esp.idEspecialidad) {
+                <div class="col-md-6">
+                  <div class="selection-card p-4 text-center border rounded-3 cursor-pointer transition-all shadow-sm"
+                       [ngClass]="{'border-primary bg-primary bg-opacity-5 fw-bold': especialidadSeleccionadaId() === esp.idEspecialidad}"
+                       (click)="seleccionarEspecialidad(esp.idEspecialidad)">
+                    
+                    <div class="fs-1 mb-2" [ngClass]="esp.nombreEspecialidad.toLowerCase().includes('cardio') ? 'text-danger' : 'text-info'">
+                      <i [ngClass]="esp.nombreEspecialidad.toLowerCase().includes('cardio') ? 'bi bi-heart-pulse-fill' : 'bi bi-backpack-fill'"></i>
+                    </div>
+                    
+                    <h6 class="fw-bold text-dark mb-1">{{ esp.nombreEspecialidad }}</h6>
+                    <p class="text-muted small mb-0">
+                      {{ esp.nombreEspecialidad.toLowerCase().includes('cardio') 
+                         ? 'Salud cardiovascular e hipertensión arterial.' 
+                         : 'Atención especializada e integral para la salud de su familia.' }}
+                    </p>
                   </div>
-                  <h6 class="fw-bold text-dark mb-1">Cardiología</h6>
-                  <p class="text-muted small mb-0">Salud cardiovascular e hipertensión arterial.</p>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="selection-card p-4 text-center border rounded-3 cursor-pointer"
-                     [ngClass]="{'border-primary bg-primary bg-opacity-5': especialidadSeleccionada() === '2'}"
-                     (click)="especialidadSeleccionada.set('2')">
-                  <div class="fs-1 text-info mb-2">
-                    <i class="bi bi-backpack-fill"></i>
-                  </div>
-                  <h6 class="fw-bold text-dark mb-1">Pediatría</h6>
-                  <p class="text-muted small mb-0">Medicina infantil, neonatal y del desarrollo.</p>
+              } @empty {
+                <div class="col-12 text-center p-5">
+                  <div class="spinner-border text-primary" role="status"></div>
+                  <p class="text-muted mt-2 small">Cargando especialidades médicas institucionales...</p>
                 </div>
-              </div>
+              }
             </div>
           </div>
         }
@@ -72,13 +75,18 @@
               <span class="text-primary me-2">02.</span> Seleccione un profesional del Staff
             </h5>
             <div class="row g-3">
-              @for (medico of medicosFiltrados(); track medico.id) {
+              @for (medico of medicosFiltrados(); track medico.especialidadId) {
                 <div class="col-12">
-                  <div class="card border p-3 card-medico cursor-pointer transition-all"
-                       [ngClass]="{'border-primary bg-primary bg-opacity-5': medicoSeleccionadoId() === medico.id}"
-                       (click)="medicoSeleccionadoId.set(medico.id)">
+                  <div class="card border p-3 card-medico cursor-pointer transition-all shadow-sm"
+                       [ngClass]="{'border-primary bg-primary bg-opacity-5 fw-bold': medicoSeleccionadoId() === medico.idMedico}"
+                       (click)="medicoSeleccionadoId.set(medico.idMedico)">
                     <div class="d-flex align-items-center gap-3">
-                      <img [src]="medico.avatar" alt="Doctor" class="rounded-circle object-fit-cover shadow-sm" style="width: 65px; height: 65px;">
+                      
+                      <img [src]="'https://api.dicebear.com/7.x/lorelei/svg?seed=' + medico.idMedico" 
+                           alt="Avatar del Especialista" 
+                           class="rounded-circle bg-light p-1 shadow-xs border border-opacity-10" 
+                           style="width: 65px; height: 65px; object-fit: cover;">
+                      
                       <div class="flex-grow-1">
                         <h6 class="fw-bold text-dark mb-1">{{ medico.nombre }}</h6>
                         <div class="d-flex align-items-center gap-2">
@@ -86,7 +94,7 @@
                             <i class="bi bi-patch-check-fill me-1"></i>Colegiatura Verificada
                           </span>
                           <span class="text-warning small">
-                            <i class="bi bi-star-fill me-1"></i>{{ medico.calificacion }}.0
+                            <i class="bi bi-star-fill me-1"></i>{{ medico.calificacion || 5 }}.0
                           </span>
                         </div>
                       </div>
@@ -97,6 +105,10 @@
                       </div>
                     </div>
                   </div>
+                </div>
+              } @empty {
+                <div class="col-12 text-center p-4">
+                  <p class="text-muted small">No se encontraron médicos disponibles para esta especialidad.</p>
                 </div>
               }
             </div>
@@ -110,7 +122,10 @@
             </h5>
             
             <div class="d-flex align-items-center gap-3 bg-light p-3 rounded-3 mb-4">
-              <img [src]="infoMedicoSeleccionado()?.avatar" class="rounded-circle object-fit-cover" style="width: 45px; height: 45px;">
+              <img [src]="'https://api.dicebear.com/7.x/lorelei/svg?seed=' + (infoMedicoSeleccionado()?.idMedico || 'default')" 
+                   class="rounded-circle bg-light p-1 shadow-xs border border-opacity-10" 
+                   style="width: 45px; height: 45px; object-fit: cover;"
+                   alt="Avatar Médico Asignado">
               <div>
                 <small class="text-muted d-block">Médico Asignado</small>
                 <strong class="text-dark">{{ infoMedicoSeleccionado()?.nombre }}</strong>
@@ -122,19 +137,21 @@
                 <label class="form-label small fw-semibold text-muted">
                   <i class="bi bi-calendar3 me-1"></i>Fecha elegida
                 </label>
-                <input type="date" class="form-control" [ngModel]="fechaSeleccionada()" (ngModelChange)="fechaSeleccionada.set($event)">
+                <input type="date" class="form-control" [ngModel]="fechaSeleccionada()" (ngModelChange)="fechaSeleccionada.set($event)" [disabled]="isSubmitting()">
               </div>
+              
               <div class="col-sm-6">
                 <label class="form-label small fw-semibold text-muted">
                   <i class="bi bi-clock me-1"></i>Turno de Atención
                 </label>
-                <select class="form-select" [ngModel]="horaSeleccionada()" (ngModelChange)="horaSeleccionada.set($event)">
+                <select class="form-select" [ngModel]="horaSeleccionada()" (ngModelChange)="horaSeleccionada.set($event)" [disabled]="isSubmitting()">
                   <option value="">Seleccione un horario...</option>
                   @for (hora of infoMedicoSeleccionado()?.disponibilidad; track hora) {
                     <option [value]="hora">{{ hora }} hrs</option>
                   }
                 </select>
               </div>
+              
               <div class="col-12 mt-3">
                 <label class="form-label small fw-semibold text-muted">
                   <i class="bi bi-chat-right-text me-1"></i>Sintomatología / Motivo
@@ -142,7 +159,8 @@
                 <textarea class="form-control" rows="3" 
                           placeholder="Escriba detalladamente sus malestares (mínimo 10 letras)..."
                           [ngModel]="motivoConsulta()" 
-                          (ngModelChange)="motivoConsulta.set($event)"></textarea>
+                          (ngModelChange)="motivoConsulta.set($event)"
+                          [disabled]="isSubmitting()"></textarea>
                 
                 @if (motivoConsulta().trim().length > 0 && motivoConsulta().trim().length < 10) {
                   <div class="text-danger fs-xs mt-1 fw-medium animate-fade">
@@ -155,7 +173,7 @@
         }
 
         <div class="d-flex justify-content-between mt-5 pt-3 border-top">
-          <button (click)="anteriorPaso()" class="btn btn-outline-secondary px-4 fw-semibold" [disabled]="pasoActual() === 1">
+          <button (click)="anteriorPaso()" class="btn btn-outline-secondary px-4 fw-semibold" [disabled]="pasoActual() === 1 || isSubmitting()">
             <i class="bi bi-arrow-left me-2"></i>Atrás
           </button>
 
@@ -165,8 +183,13 @@
               Siguiente<i class="bi bi-arrow-right ms-2"></i>
             </button>
           } @else {
-            <button (click)="finalizarReserva()" class="btn btn-success px-4 fw-bold shadow-sm" [disabled]="!esPaso3Valido()">
-              <i class="bi bi-check-circle-fill me-2"></i>Confirmar y Registrar Cita
+            <button (click)="finalizarReserva()" class="btn btn-success px-4 fw-bold shadow-sm" [disabled]="!esPaso3Valido() || isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Procesando Reserva Real...
+              } @else {
+                <i class="bi bi-check-circle-fill me-2"></i>Confirmar y Registrar Cita
+              }
             </button>
           }
         </div>

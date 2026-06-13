@@ -11,7 +11,7 @@ export interface Cita {
 }
 
 export interface MedicoUI {
-  id: number;
+  idMedico: number;
   nombre: string;
   especialidadId: number;
   avatar: string;

@@ -28,7 +28,7 @@ export class DashboardPacienteComponent {
 
   // Buscador rápido del catálogo de médicos
   obtenerAvatarMedico(medicoId: number): string {
-    const medico = this.pacienteService.medicos().find(m => m.id === medicoId);
+    const medico = this.pacienteService.medicos().find(m => m.idMedico === medicoId);
     return medico ? medico.avatar : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=150';
   }
 }

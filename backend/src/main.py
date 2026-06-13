@@ -4,6 +4,7 @@ from src.apis.auth_api import router as auth_router
 from src.apis.usuario_api import router as usuario_router  
 from src.apis.medico_api import router as medico_router
 from src.apis.paciente_api import router as paciente_router
+from src.apis.cita_api import router as cita_router
 
 app = FastAPI(
     title="MEDICORE API",
@@ -24,6 +25,7 @@ app.include_router(auth_router)
 app.include_router(usuario_router)  
 app.include_router(medico_router)
 app.include_router(paciente_router)
+app.include_router(cita_router)
 
 @app.get("/")
 def read_root():
