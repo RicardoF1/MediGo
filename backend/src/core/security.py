@@ -21,3 +21,24 @@ class SecurityHandler:
             "exp": expiracion
         }
         return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+    # --- NUEVO MÉTODO AGREGADO ---
+    @staticmethod
+    def decodificar_jwt(token: str) -> dict:
+        """
+        Desencripta el token JWT enviado por Angular. 
+        Si expiró o está corrupto, corta la petición con un error 401.
+        """
+        try:
+            payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="El token de sesión ha expirado. Inicie sesión nuevamente."
+            )
+        except jwt.PyJWTError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales de acceso inválidas o alteradas."
+            )
