@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MedicoService } from '../../services/medico.service';
 
@@ -9,16 +9,16 @@ import { MedicoService } from '../../services/medico.service';
   templateUrl: './agenda-medico.component.html',
   styleUrls: ['./agenda-medico.component.scss']
 })
-export class AgendaMedicoComponent {
+export class AgendaMedicoComponent implements OnInit {
   private medicoService = inject(MedicoService);
 
-  // Lectura del estado global desde el servicio
+  // Lectura directa del estado global reactivo conectado al Backend
   public todasLasCitas = this.medicoService.citasAgenda;
 
-  // SIGNAL MUTABLE: Controla el filtro de estado seleccionado en la UI
+  // SIGNAL MUTABLE: Controla el filtro en la UI
   public filtroEstado = signal<string>('TODAS');
 
-  // COMPUTED: Filtrado reactivo en tiempo real basado en el estado de la señal mutable
+  // COMPUTED: Filtrado en tiempo real sin recargar datos del servidor
   public citasFiltradas = computed(() => {
     const filtro = this.filtroEstado();
     if (filtro === 'TODAS') {
@@ -27,7 +27,11 @@ export class AgendaMedicoComponent {
     return this.todasLasCitas().filter(c => c.estado === filtro);
   });
 
-  // Métodos de acción para la gestión de la agenda
+  ngOnInit(): void {
+    // Sincronización automática de datos al levantar la vista del médico
+    this.medicoService.cargarAgenda();
+  }
+
   public actualizarEstado(citaId: number, estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA'): void {
     this.medicoService.cambiarEstadoCita(citaId, estado);
   }

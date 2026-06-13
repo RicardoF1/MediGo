@@ -44,22 +44,25 @@ class MedicoRepository:
         # Aplanamos el JSON estructurado para cumplir con el esquema del Frontend
         citas_formateadas = []
         for item in respuesta.data:
-            # Extraemos de forma segura el nombre del paciente cruzando el nodo
             paciente_data = item.get("pacientes", {})
             usuario_data = paciente_data.get("usuarios", {}) if paciente_data else {}
             nombre_paciente = usuario_data.get("nombre", "Paciente Desconocido") if usuario_data else "Paciente Desconocido"
             
-            # Extraemos el nombre del estado
             estado_data = item.get("estados_cita", {})
             nombre_estado = estado_data.get("nombre_estado", "PENDIENTE") if estado_data else "PENDIENTE"
+
+            # === TRADUCCIÓN CLAVE PARA EL FRONTEND ===
+            # Si en la base de datos dice COMPLETADA, se lo enviamos a Angular como ATENDIDA
+            if nombre_estado == "COMPLETADA":
+                nombre_estado = "ATENDIDA"
 
             citas_formateadas.append({
                 "id_cita": item["id_cita"],
                 "id_paciente": item["id_paciente"],
                 "paciente_nombre": nombre_paciente,
                 "fecha": item["fecha"],
-                "hora": str(item["hora"]),  # Convierte el formato TIME a String "15:30:00"
-                "estado": nombre_estado,
+                "hora": str(item["hora"]),  
+                "estado": nombre_estado, # Aquí ya viaja "ATENDIDA" impecable
                 "motivo": item["motivo"] or "Sin motivo especificado"
             })
             
@@ -67,10 +70,57 @@ class MedicoRepository:
 
     def actualizar_estado_cita(self, id_cita: int, data: EstadoCitaUpdate) -> dict:
         """
-        Actualiza el id_estado de la tabla citas mapeando al catálogo estados_cita
+        Actualiza el id_estado y retorna la cita completamente aplanada con 
+        los nombres de las relaciones para que el Frontend se refresque al instante.
         """
-        respuesta = supabase.table("citas") \
+        # 1. Ejecutamos la actualización del catálogo
+        supabase.table("citas") \
             .update({"id_estado": data.id_estado}) \
             .eq("id_cita", id_cita) \
             .execute()
-        return respuesta.data[0] if respuesta.data else {}
+            
+        # 2. Recuperamos esa única cita con sus cruzamientos limpios
+        respuesta = supabase.table("citas") \
+            .select("""
+                id_cita,
+                fecha,
+                hora,
+                motivo,
+                id_paciente,
+                pacientes (
+                    usuarios (
+                        nombre
+                    )
+                ),
+                estados_cita (
+                    nombre_estado
+                )
+            """) \
+            .eq("id_cita", id_cita) \
+            .execute()
+
+        if not respuesta.data:
+            return {}
+
+        item = respuesta.data[0]
+        
+        # Aplanamos exactamente igual que en listar para mantener la consistencia
+        paciente_data = item.get("pacientes", {})
+        usuario_data = paciente_data.get("usuarios", {}) if paciente_data else {}
+        nombre_paciente = usuario_data.get("nombre", "Paciente Desconocido") if usuario_data else "Paciente Desconocido"
+        
+        estado_data = item.get("estados_cita", {})
+        nombre_estado = estado_data.get("nombre_estado", "PENDIENTE") if estado_data else "PENDIENTE"
+
+        if nombre_estado == "COMPLETADA":
+            nombre_estado = "ATENDIDA"
+
+        return {
+            "id_cita": item["id_cita"],
+            "id_paciente": item["id_paciente"],
+            "paciente_nombre": nombre_paciente,
+            "fecha": item["fecha"],
+            "hora": str(item["hora"]),
+            "estado": nombre_estado,
+            "motivo": item["motivo"] or "Sin motivo especificado"
+        }

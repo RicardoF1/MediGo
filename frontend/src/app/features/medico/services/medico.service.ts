@@ -1,45 +1,18 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { CitaMedico, PerfilMedico } from '../models/agenda.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MedicoService {
-  // Estado reactivo de las citas asignadas al médico logueado
-  private _citasAgenda = signal<CitaMedico[]>([
-    {
-      id: 101,
-      pacienteId: 1,
-      pacienteNombre: 'Ricardo Miguel Flores Toribio',
-      pacienteDni: '74839201',
-      fecha: '2026-06-05',
-      hora: '10:00',
-      estado: 'CONFIRMADA',
-      motivoConsulta: 'Chequeo rutinario de presión y control cardiovascular.'
-    },
-    {
-      id: 102,
-      pacienteId: 2,
-      pacienteNombre: 'Camila San Martín Vega',
-      pacienteDni: '45892013',
-      fecha: '2026-06-05',
-      hora: '11:30',
-      estado: 'PENDIENTE',
-      motivoConsulta: 'Evaluación por arritmias esporádicas.'
-    }
-  ]);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/api/medico`;
+
+  private _citasAgenda = signal<CitaMedico[]>([]);
   public citasAgenda = this._citasAgenda.asReadonly();
 
-  /**
-   * Actualiza transaccionalmente el estado clínico de una cita en la agenda
-   */
-  cambiarEstadoCita(citaId: number, nuevoEstado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA'): void {
-    this._citasAgenda.update(citas => 
-      citas.map(c => c.id === citaId ? { ...c, estado: nuevoEstado } : c)
-    );
-  }
-
-  // Estado reactivo del perfil del médico logueado
   private _perfil = signal<PerfilMedico>({
     nombreCompleto: 'Dr. Carlos Mendoza Arana',
     colegiatura: 'CMP-75943',
@@ -50,12 +23,43 @@ export class MedicoService {
     activoParaCitas: true
   });
   public perfil = this._perfil.asReadonly();
-  
-  /**
-   * Actualiza los datos del perfil del médico de forma inmutable
-   */
+
+  cargarAgenda(): void {
+    this.http.get<CitaMedico[]>(`${this.apiUrl}/agenda`).subscribe({
+      next: (citas) => this._citasAgenda.set(citas),
+      error: (err) => console.error('Error al descargar la agenda médica:', err)
+    });
+  }
+
+  cambiarEstadoCita(citaId: number, nuevoEstado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA'): void {
+    let idEstadoMapeado = 10;
+
+    switch (nuevoEstado) {
+      case 'PENDIENTE':
+        idEstadoMapeado = 10;
+        break;
+      case 'ATENDIDA':
+        idEstadoMapeado = 11;
+        break;
+      case 'CANCELADA':
+        idEstadoMapeado = 12;
+        break;
+    }
+
+    const payload = { id_estado: idEstadoMapeado };
+
+    this.http.patch<{ status: string, data: any }>(`${this.apiUrl}/cita/${citaId}/estado`, payload)
+      .subscribe({
+        next: () => {
+          this._citasAgenda.update(citas =>
+            citas.map(c => c.id_cita === citaId ? { ...c, estado: nuevoEstado } : c)
+          );
+        },
+        error: (err) => console.error('Error al mutar el estado clínico:', err)
+      });
+  }
+
   actualizarPerfil(datosActualizados: PerfilMedico): void {
     this._perfil.set({ ...datosActualizados });
   }
-
 }

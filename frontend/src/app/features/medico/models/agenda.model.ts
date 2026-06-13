@@ -1,12 +1,11 @@
 export interface CitaMedico {
-  id: number;
-  pacienteId: number;
-  pacienteNombre: string;
-  pacienteDni: string;
-  fecha: string;
-  hora: string;
+  id_cita: number;       
+  id_paciente: number;   
+  paciente_nombre: string;
+  fecha: string;         // 'YYYY-MM-DD'
+  hora: string;          // 'HH:MM:SS' o string formateado
   estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
-  motivoConsulta: string;
+  motivo: string;
 }
 
 export interface PerfilMedico {
