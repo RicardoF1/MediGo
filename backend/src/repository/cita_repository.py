@@ -93,3 +93,26 @@ class CitaRepository:
             }
             for c in res.data
         ]
+    
+    def obtener_resumen_dashboard(self, id_paciente: int) -> dict:
+        # Debemos filtrar por el nombre del estado en la tabla relacionada 'estados_cita'
+        # Supabase requiere hacer el join para filtrar por campos de tablas relacionadas
+        
+        # 1. Contar Activas (Pendientes o Confirmadas)
+        activas = supabase.table("citas") \
+            .select("id_cita, estados_cita!inner(nombre_estado)", count='exact') \
+            .eq("id_paciente", id_paciente) \
+            .in_("estados_cita.nombre_estado", ["PENDIENTE", "CONFIRMADA"]) \
+            .execute()
+        
+        # 2. Contar Concluidas (Completadas)
+        concluidas = supabase.table("citas") \
+            .select("id_cita, estados_cita!inner(nombre_estado)", count='exact') \
+            .eq("id_paciente", id_paciente) \
+            .eq("estados_cita.nombre_estado", "COMPLETADA") \
+            .execute()
+            
+        return {
+            "citasActivas": activas.count if activas.count is not None else 0,
+            "atencionesConcluidas": concluidas.count if concluidas.count is not None else 0
+        }

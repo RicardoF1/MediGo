@@ -34,3 +34,7 @@ class HistorialCitaResponse(BaseModel):
     nombreMedico: str
     especialidadNombre: str 
     estado: str
+
+class ResumenDashboard(BaseModel):
+    citasActivas: int
+    atencionesConcluidas: int

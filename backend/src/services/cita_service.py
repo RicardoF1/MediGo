@@ -29,3 +29,12 @@ class CitaService:
         if not id_paciente:
             return []
         return self.cita_repository.obtener_historial_paciente(id_paciente)
+
+
+    def get_resumen_paciente(self, id_usuario: int) -> dict:
+        
+        id_paciente = self.cita_repository.obtener_id_paciente_por_usuario(id_usuario)
+        if not id_paciente:
+            return {"citasActivas": 0, "atencionesConcluidas": 0}
+            
+        return self.cita_repository.obtener_resumen_dashboard(id_paciente)

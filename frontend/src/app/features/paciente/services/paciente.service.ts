@@ -80,5 +80,11 @@ export class PacienteService {
       error: (err) => console.error('Error:', err)
     });
   }
+
+  obtenerResumenDashboard(): Observable<{ citasActivas: number; atencionesConcluidas: number }> {
+    return this.http.get<{ citasActivas: number; atencionesConcluidas: number }>(
+      `${this.apiCitasUrl}/resumen`
+    );
+  }
 }
 
