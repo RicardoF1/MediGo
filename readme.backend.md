@@ -1,6 +1,6 @@
-# 🩺 MediGo API - Backend Server
+# 🩺 MediCore API - Backend Server
 
-Este es el núcleo del servidor para el **Sistema de Gestión Hospitalaria MediGo**, desarrollado con **FastAPI** y configurado bajo una arquitectura limpia y desacoplada de tres capas: **API ➔ Service ➔ Repository**.
+Este es el núcleo del servidor para el **Sistema de Gestión Hospitalaria Medicore**, desarrollado con **FastAPI** y configurado bajo una arquitectura limpia y desacoplada de tres capas: **API ➔ Service ➔ Repository**.
 
 La persistencia de datos está centralizada en **Supabase (PostgreSQL)**, estructurada y normalizada rigurosamente hasta la **Tercera Forma Normal (3FN)**.
 
@@ -87,10 +87,17 @@ Asegúrate de contar con uv instalado para garantizar el aprovisionamiento insta
 
 ```bash
 # Instalación en Windows (PowerShell)
-irm https://astral.sh/uv/install.ps1 | iex
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Instalación en macOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+#Iniciar proyecto
+uv init
+
+#Añadir dependencias Uno de los dos
+uv pip install -r requirements.txt
+uv sync
 ```
 
 ---
