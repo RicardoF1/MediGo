@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MedicoService } from '../../services/medico.service';
@@ -11,46 +11,82 @@ import { PerfilMedico } from '../../models/agenda.model';
   templateUrl: './perfil-medico.component.html',
   styleUrls: ['./perfil-medico.component.scss']
 })
-export class PerfilMedicoComponent {
+export class PerfilMedicoComponent implements OnInit {
   private medicoService = inject(MedicoService);
+  public perfilOriginal = this.medicoService.perfil;
 
-  // Datos originales del servicio
-  private perfilOriginal = this.medicoService.perfil;
+  // SIGNALS FORMULARIO: Ahora incluimos nombre y correo para que se puedan editar
+  public nombreCompleto = signal<string>('');
+  public correo = signal<string>('');
+  public telefono = signal<string>('');
+  public consultorio = signal<string>('');
+  public activoParaCitas = signal<boolean>(true);
 
-  // SIGNAL FORMS: Propiedades reactivas independientes para la edición
-  public telefono = signal<string>(this.perfilOriginal().telefono);
-  public consultorio = signal<string>(this.perfilOriginal().consultorio);
-  public activoParaCitas = signal<boolean>(this.perfilOriginal().activoParaCitas);
+  constructor() {
+    effect(() => {
+      const datos = this.perfilOriginal();
+      if (datos) {
+        this.nombreCompleto.set(datos.nombreCompleto || '');
+        this.correo.set(datos.correo || '');
+        this.telefono.set(datos.telefono || '');
+        this.consultorio.set(datos.consultorio || '');
+        this.activoParaCitas.set(datos.activoParaCitas);
+      }
+    });
+  }
 
-  // VALIDACIONES
+  ngOnInit(): void {
+    this.medicoService.cargarPerfil();
+  }
+
+  // VALIDACIONES REACTIVAS EXPANDIDAS
+  public esNombreValido = computed(() => this.nombreCompleto().trim().length >= 3);
+  public esCorreoValido = computed(() => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(this.correo()));
   public esTelefonoValido = computed(() => /^[0-9]{9}$/.test(this.telefono()));
-  public esConsultorioValido = computed(() => this.consultorio().trim().length >= 5);
+  public esConsultorioValido = computed(() => this.consultorio().trim().length >= 4);
 
-  public esFormularioValido = computed(() => this.esTelefonoValido() && this.esConsultorioValido());
+  public esFormularioValido = computed(() => 
+    this.esNombreValido() && 
+    this.esCorreoValido() && 
+    this.esTelefonoValido() && 
+    this.esConsultorioValido()
+  );
 
-  // COMPUTED: Detecta de manera reactiva si hay cambios reales frente al servicio
+  // DETECTA CAMBIOS EN CUALQUIERA DE LOS 5 CAMPOS
   public tieneCambios = computed(() => {
-    return this.telefono() !== this.perfilOriginal().telefono ||
-           this.consultorio() !== this.perfilOriginal().consultorio ||
-           this.activoParaCitas() !== this.perfilOriginal().activoParaCitas;
+    const original = this.perfilOriginal();
+    if (!original) return false;
+    
+    return this.nombreCompleto() !== original.nombreCompleto ||
+           this.correo() !== original.correo ||
+           this.telefono() !== original.telefono ||
+           this.consultorio() !== original.consultorio ||
+           this.activoParaCitas() !== original.activoParaCitas;
   });
 
-  // Getter para los campos informativos fijos
   public get infoFija() {
-    return this.perfilOriginal();
+    return this.perfilOriginal() || {
+      nombreCompleto: 'Cargando...',
+      especialidad: 'Cargando...',
+      colegiatura: '...',
+      correo: '...'
+    };
   }
 
   guardarPerfil(): void {
-    if (!this.esFormularioValido() || !this.tieneCambios()) return;
+    const original = this.perfilOriginal();
+    if (!this.esFormularioValido() || !this.tieneCambios() || !original) return;
 
+    // El payload ahora lleva los nuevos valores editados del formulario
     const payload: PerfilMedico = {
-      ...this.perfilOriginal(),
+      ...original,
+      nombreCompleto: this.nombreCompleto(),
+      correo: this.correo(),
       telefono: this.telefono(),
       consultorio: this.consultorio(),
       activoParaCitas: this.activoParaCitas()
     };
 
     this.medicoService.actualizarPerfil(payload);
-    alert('💾 Configuración profesional actualizada correctamente en el sistema.');
   }
 }

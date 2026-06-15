@@ -83,29 +83,42 @@
             <thead class="table-light text-muted small fw-semibold">
               <tr>
                 <th scope="col" class="ps-3">Especialista</th>
-                <th scope="col">Especialidad</th>
-                <th scope="col" class="text-end pe-3">Calificación</th>
+                <th scope="col">Identificador Único</th>
+                <th scope="col" class="text-end pe-3">Estado Operativo</th>
               </tr>
             </thead>
             <tbody>
-              @for (medico of listaMedicos(); track medico.id) {
+              @for (medico of usuariosFiltradosPorRolMedico(); track medico.id_usuario) {
                 <tr class="table-row-hover">
                   <td class="ps-3">
                     <div class="d-flex align-items-center gap-3">
-                      <img [src]="medico.avatar" alt="Doctor" class="rounded-circle object-fit-cover shadow-xs" style="width: 36px; height: 36px;">
+                      
+                      <img [src]="'https://api.dicebear.com/7.x/lorelei/svg?seed=' + medico.correo" 
+                           alt="Avatar del Especialista" 
+                           class="rounded-circle bg-light p-1 shadow-xs border border-opacity-10" 
+                           style="width: 40px; height: 40px; object-fit: cover;">
+                           
                       <div>
                         <div class="fw-bold text-dark fs-sm">{{ medico.nombre }}</div>
-                        <small class="text-muted text-xs">ID Master: #{{ medico.id }}</small>
+                        <small class="text-muted text-xs font-monospace">{{ medico.correo }}</small>
                       </div>
                     </div>
                   </td>
                   <td>
-                    <span class="badge bg-light text-secondary border py-1 px-2 fs-xs">
-                      {{ medico.especialidadId === 1 ? 'Cardiología' : 'Pediatría' }}
+                    <span class="badge bg-light text-secondary border py-1 px-2 font-monospace fs-xs">
+                      USR-{{ medico.id_usuario }}
                     </span>
                   </td>
-                  <td class="text-end pe-3 text-warning fw-semibold fs-sm">
-                    <i class="bi bi-star-fill me-1"></i>{{ medico.calificacion }}.0
+                  <td class="text-end pe-3">
+                    <span class="badge" [ngClass]="medico.activo ? 'bg-success bg-opacity-10 text-success' : 'bg-danger bg-opacity-10 text-danger'">
+                      {{ medico.activo ? 'Disponible' : 'Inactivo' }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-center py-4 text-muted small">
+                    No hay médicos registrados en el sistema de base de datos actualmente.
                   </td>
                 </tr>
               }

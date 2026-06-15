@@ -6,12 +6,12 @@ export interface Cita {
   especialidadNombre: string;
   fecha: string;
   hora: string;
-  estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA';
+  estado: 'PENDIENTE' | 'CONFIRMADA' | 'ATENDIDA' | 'CANCELADA' | 'COMPLETADA';
   motivoConsulta?: string;
 }
 
 export interface MedicoUI {
-  id: number;
+  idMedico: number;
   nombre: string;
   especialidadId: number;
   avatar: string;

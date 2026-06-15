@@ -1,18 +1,37 @@
 import { Injectable, inject, computed, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http'; // <-- Añadido para la API
+import { environment } from '../../../../environments/environment.js';
 import { PacienteService } from '../../paciente/services/paciente.service';
 import { MedicoService } from '../../medico/services/medico.service';
-import { UsuarioAuditoria } from '../models/admin.model';
+import { Observable, tap } from 'rxjs';
+
+// Interfaz que mapea exactamente lo que devuelve tu backend (Supabase + FastAPI)
+export interface UsuarioAPI {
+  id_usuario: number;
+  nombre: string;
+  correo: string;
+  id_rol: number;  // 10: ADMIN, 11: MEDICO, 12: PACIENTE
+  activo: boolean;
+  creado_en: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
-  // Inyección de dependencias de los cores de negocio existentes
+  // Inyección de dependencias de los cores de negocio existentes y HTTP
+  private http = inject(HttpClient); 
   private pacienteService = inject(PacienteService);
   private medicoService = inject(MedicoService);
 
-  // SIGNALS COMPUTADAS AVANZADAS: Procesan KPIs en tiempo real cruzando múltiples estados
-  public totalMedicosActivos = computed(() => this.pacienteService.medicos().length);
+  // URL dinámica construida desde tu archivo environment
+  private apiUrl = `${environment.apiUrl}/usuarios`;
+
+  // SIGNALS COMPUTADAS AVANZADAS: Procesan KPIs en tiempo real cruzando múltiples estados (SE MANTIENEN INTACTAS)
+  //public totalMedicosActivos = computed(() => this.pacienteService.medicos().length);
+  public totalMedicosActivos = computed(() => {
+    return this.usuariosMaster().filter(usuario => usuario.id_rol === 11).length;
+  });
   
   public totalCitasGlobales = computed(() => {
     // Une las citas de auditoría con las del módulo transaccional de pacientes
@@ -38,48 +57,36 @@ export class AdminService {
     return Math.round((this.totalCitasAtendidas() / globales) * 100);
   });
 
-
-  // Estado inicial reactivo de las cuentas de usuario registradas
-  private _usuariosMaster = signal<UsuarioAuditoria[]>([
-    {
-      id: 1,
-      nombreCompleto: 'Ricardo Miguel Flores Toribio',
-      correo: 'ricardo.flores@hospital.com',
-      rol: 'PACIENTE',
-      fechaRegistro: '2026-04-10',
-      estadoCuenta: 'ACTIVO',
-      ultimaConexion: '2026-05-31 15:30'
-    },
-    {
-      id: 2,
-      nombreCompleto: 'Dr. Carlos Mendoza Arana',
-      correo: 'carlos.mendoza@hospital.com',
-      rol: 'MEDICO',
-      fechaRegistro: '2025-09-20',
-      estadoCuenta: 'ACTIVO',
-      ultimaConexion: '2026-05-31 16:15'
-    },
-    {
-      id: 3,
-      nombreCompleto: 'Camila San Martín Vega',
-      correo: 'camila.sanmartin@hospital.com',
-      rol: 'PACIENTE',
-      fechaRegistro: '2026-05-02',
-      estadoCuenta: 'ACTIVO',
-      ultimaConexion: '2026-05-30 11:00'
-    },
-    {
-      id: 4,
-      nombreCompleto: 'Admin General Corporativo',
-      correo: 'admin.ops@hospital.com',
-      rol: 'ADMINISTRADOR',
-      fechaRegistro: '2025-01-15',
-      estadoCuenta: 'ACTIVO',
-      ultimaConexion: '2026-05-31 16:30'
-    }
-  ]);
-
+  // SIGNAL MUTABLE CENTRALIZADA: Ahora inicializa vacía mapeando a UsuarioAPI
+  private _usuariosMaster = signal<UsuarioAPI[]>([]);
   public usuariosMaster = this._usuariosMaster.asReadonly();
+
+  /**
+   * Obtiene la lista de usuarios desde la API de FastAPI y actualiza la señal master
+   */
+  public cargarUsuarios(): void {
+    this.http.get<UsuarioAPI[]>(this.apiUrl).subscribe({
+      next: (usuarios) => {
+        console.log('USUARIOS DESDE LA API:', usuarios);
+        this._usuariosMaster.set(usuarios);
+      },
+      error: (err) => {
+        console.error('Error al recuperar el listado de usuarios de la API:', err);
+      }
+    });
+  }
+
+  /**
+   * Envía los datos del nuevo usuario a FastAPI y actualiza el estado local en tiempo real
+   */
+  public registrarUsuario(nuevoUsuario: any): Observable<UsuarioAPI> {
+    return this.http.post<UsuarioAPI>(this.apiUrl, nuevoUsuario).pipe(
+      tap((usuarioCreado) => {
+        // Inserta de forma reactiva el usuario retornado por el backend a la lista master
+        this._usuariosMaster.update(lista => [...lista, usuarioCreado]);
+      })
+    );
+  }
 
   /**
    * Modifica transaccionalmente el acceso de seguridad de un usuario
@@ -87,15 +94,11 @@ export class AdminService {
   conmutarEstadoCuenta(usuarioId: number): void {
     this._usuariosMaster.update(lista =>
       lista.map(u => {
-        if (u.id === usuarioId) {
-          const nuevoEstado = u.estadoCuenta === 'ACTIVO' ? 'SUSPENDIDO' : 'ACTIVO';
-          return { ...u, estadoCuenta: nuevoEstado };
+        if (u.id_usuario === usuarioId) {
+          return { ...u, activo: !u.activo };
         }
         return u;
       })
     );
   }
-
-
-
 }

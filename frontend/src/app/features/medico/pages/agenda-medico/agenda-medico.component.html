@@ -1,6 +1,5 @@
 <div class="container mb-5">
 
-  <!-- Encabezado del Módulo -->
   <div class="text-center mb-5">
     <div class="d-inline-block p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
       <i class="bi bi-calendar3-event fs-1"></i>
@@ -9,7 +8,6 @@
     <p class="text-muted">Administre los turnos agendados, controle los estados de atención y revise los motivos de consulta.</p>
   </div>
 
-  <!-- Segmentación de Filtros Reactivos -->
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
     <div class="btn-group shadow-xs bg-white p-1 rounded-3 border" role="group">
       <button type="button" class="btn btn-sm px-3 rounded-2" 
@@ -18,14 +16,14 @@
         Todas ({{ todasLasCitas().length }})
       </button>
       <button type="button" class="btn btn-sm px-3 rounded-2" 
-              [ngClass]="filtroEstado() === 'CONFIRMADA' ? 'btn-primary' : 'btn-link text-secondary text-decoration-none'"
-              (click)="filtroEstado.set('CONFIRMADA')">
-        Confirmadas
-      </button>
-      <button type="button" class="btn btn-sm px-3 rounded-2" 
               [ngClass]="filtroEstado() === 'ATENDIDA' ? 'btn-success' : 'btn-link text-secondary text-decoration-none'"
               (click)="filtroEstado.set('ATENDIDA')">
         Atendidas
+      </button>
+      <button type="button" class="btn btn-sm px-3 rounded-2" 
+              [ngClass]="filtroEstado() === 'CANCELADA' ? 'btn-danger' : 'btn-link text-secondary text-decoration-none'"
+              (click)="filtroEstado.set('CANCELADA')">
+        Canceladas
       </button>
     </div>
 
@@ -34,14 +32,13 @@
     </span>
   </div>
 
-  <!-- Contenedor del Listado / Tabla de Control -->
   <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-white">
     <div class="table-responsive">
       <table class="table align-middle custom-table mb-0">
         <thead class="table-light text-muted small fw-semibold">
           <tr>
             <th scope="col" class="ps-4">Paciente</th>
-            <th scope="col">Documento (DNI)</th>
+            <th scope="col">Identificador Cita</th>
             <th scope="col">Horario Programado</th>
             <th scope="col">Motivo de Consulta</th>
             <th scope="col">Estado</th>
@@ -49,17 +46,18 @@
           </tr>
         </thead>
         <tbody>
-          @for (cita of citasFiltradas(); track cita.id) {
+          @for (cita of citasFiltradas(); track cita.id_cita) {
             <tr class="table-row-hover">
               <td class="ps-4">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="avatar-init shadow-xs text-white bg-secondary fw-bold rounded-circle d-flex align-items-center justify-content-center text-uppercase">
-                    {{ cita.pacienteNombre.charAt(0) }}
-                  </div>
-                  <span class="fw-bold text-dark fs-sm">{{ cita.pacienteNombre }}</span>
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="'https://api.dicebear.com/7.x/open-peeps/svg?seed=' + cita.id_paciente" 
+                       alt="Avatar Paciente" 
+                       class="rounded-circle bg-light p-1 border border-opacity-10 shadow-xs" 
+                       style="width: 38px; height: 38px; object-fit: cover;">
+                  <span class="fw-bold text-dark fs-sm">{{ cita.paciente_nombre }}</span>
                 </div>
               </td>
-              <td class="text-secondary fs-sm font-monospace">{{ cita.pacienteDni }}</td>
+              <td class="text-secondary fs-sm font-monospace">#CIT-{{ cita.id_cita }}</td>
               <td>
                 <div class="fs-sm fw-semibold text-dark mb-0">
                   <i class="bi bi-clock text-muted me-2"></i>{{ cita.hora }} hrs
@@ -67,8 +65,8 @@
                 <small class="text-muted text-xs">{{ cita.fecha }}</small>
               </td>
               <td>
-                <p class="text-truncate text-secondary mb-0 fs-sm" style="max-width: 240px;" [title]="cita.motivoConsulta">
-                  {{ cita.motivoConsulta }}
+                <p class="text-truncate text-secondary mb-0 fs-sm" style="max-width: 240px;" [title]="cita.motivo">
+                  {{ cita.motivo }}
                 </p>
               </td>
               <td>
@@ -93,16 +91,16 @@
               <td class="text-end pe-4">
                 <div class="d-flex gap-2 justify-content-end">
                   @if (cita.estado !== 'ATENDIDA' && cita.estado !== 'CANCELADA') {
-                    <button (click)="actualizarEstado(cita.id, 'ATENDIDA')" 
+                    <button (click)="actualizarEstado(cita.id_cita, 'ATENDIDA')" 
                             class="btn btn-sm btn-success px-3 fs-xs fw-bold shadow-xs">
                       <i class="bi bi-check-lg me-1"></i> Atender
                     </button>
-                    <button (click)="actualizarEstado(cita.id, 'CANCELADA')" 
+                    <button (click)="actualizarEstado(cita.id_cita, 'CANCELADA')" 
                             class="btn btn-sm btn-outline-danger px-2 fs-xs fw-semibold">
                       <i class="bi bi-calendar-x"></i>
                     </button>
                   } @else {
-                    <span class="text-muted fs-xs fw-medium italic text-opacity-50">Sin acciones pendientes</span>
+                    <span class="text-muted text-xs fw-medium fst-italic opacity-75">Sin acciones pendientes</span>
                   }
                 </div>
               </td>
