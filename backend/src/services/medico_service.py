@@ -27,5 +27,4 @@ class MedicoService:
         """
         Procesa la actualización de datos personales y profesionales del médico.
         """
-        # Aquí podrías meter lógica de negocio en el futuro (ej. validar formato de colegiatura)
         return self.medico_repository.actualizar_perfil_medico(id_usuario_medico, data)

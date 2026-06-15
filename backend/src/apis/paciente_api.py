@@ -13,7 +13,7 @@ router = APIRouter(
 _paciente_service = PacienteService()
 security_bearer = HTTPBearer()
 
-# 1. PRIMERO DECLARAS LA FUNCIÓN DE INYECCIÓN
+# 1. FUNCIÓN DE INYECCIÓN
 async def obtener_id_paciente_logeado(credentials: HTTPAuthorizationCredentials = Depends(security_bearer)) -> int:
     """
     Intercepta el token JWT, lo decodifica y devuelve el id_usuario en sesión.
@@ -30,9 +30,9 @@ async def obtener_id_paciente_logeado(credentials: HTTPAuthorizationCredentials 
     return id_usuario
 
 
-# 2. DESPUÉS COLOCAS LOS ENDPOINTS QUE LA USAN
+# 2. ENDPOINTS QUE LA USAN
 @router.get("/perfil", response_model=PerfilPacienteResponse)
-async def obtener_perfil(id_usuario: int = Depends(obtener_id_paciente_logeado)): # <-- Ahora sí la reconocerá
+async def obtener_perfil(id_usuario: int = Depends(obtener_id_paciente_logeado)): 
     try:
         resultado = _paciente_service.obtener_perfil_clinico(id_usuario)
         if not resultado:

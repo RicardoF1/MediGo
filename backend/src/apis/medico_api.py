@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-# Añadimos las respuestas y esquemas necesarios para el perfil
 from src.schema.medico_schema import AgendaMedicoResponse, EstadoCitaUpdate, PerfilMedicoUpdate, PerfilMedicoResponse
 from src.services.medico_service import MedicoService
 from src.core.security import SecurityHandler
@@ -60,7 +59,7 @@ async def actualizar_estado(
             detail=f"Error al mutar el estado de la cita: {str(e)}"
         )
 
-# === NUEVOS ENDPOINTS ADAPTADOS PARA EL PERFIL CLÍNICO ===
+# === PERFIL CLÍNICO ===
 
 @router.get("/perfil", response_model=PerfilMedicoResponse)
 async def obtener_perfil_medico(id_usuario: int = Depends(obtener_id_medico_logeado)):

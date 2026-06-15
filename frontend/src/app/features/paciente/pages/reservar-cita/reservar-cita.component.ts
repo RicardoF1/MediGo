@@ -105,7 +105,7 @@ export class ReservarCitaComponent implements OnInit {
       error: (err) => {
         this.isSubmitting.set(false); // Apagamos el loading para permitir reintentar
         console.error('Fallo crítico en el proceso de reserva:', err);
-        // Aquí puedes usar un console.error o un componente de toast en el futuro
+        
       }
     });
   }

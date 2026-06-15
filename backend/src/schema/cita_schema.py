@@ -14,7 +14,6 @@ class ReservaCitaResponse(BaseModel):
     message: str
     idCita: int
 
-# Esquemas auxiliares para alimentar tus selectores de Angular
 class EspecialidadLookup(BaseModel):
     idEspecialidad: int
     nombreEspecialidad: str

@@ -51,7 +51,7 @@ class MedicoRepository:
             estado_data = item.get("estados_cita", {})
             nombre_estado = estado_data.get("nombre_estado", "PENDIENTE") if estado_data else "PENDIENTE"
 
-            # === TRADUCCIÓN CLAVE PARA EL FRONTEND ===
+            
             if nombre_estado == "COMPLETADA":
                 nombre_estado = "ATENDIDA"
 

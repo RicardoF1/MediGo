@@ -10,7 +10,6 @@ class PerfilPacienteResponse(BaseModel):
     correo: EmailStr
     telefono: Optional[str] = None
     historialClinicoNum: str
-    # Nuevos campos mapeados de la interfaz
     direccionResidencia: Optional[str] = None
     grupoSanguineo: Optional[str] = None
     contactoEmergenciaNombre: Optional[str] = None

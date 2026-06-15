@@ -40,7 +40,6 @@ async def obtener_medicos_por_especialidad(especialidad_id: int):
 # 3. POST: Reservar
 @router.post("/reservar", response_model=ReservaCitaResponse)
 async def reservar_cita(payload: ReservaCitaRequest, id_usuario: int = Depends(obtener_id_usuario_logeado)):
-    # Aquí delegamos al servicio
     result = _service.reservar_nueva_cita(id_usuario, payload)
     if result.get("status") == "error":
         raise HTTPException(status_code=400, detail=result.get("message"))
@@ -51,7 +50,7 @@ async def reservar_cita(payload: ReservaCitaRequest, id_usuario: int = Depends(o
 async def obtener_historial(id_usuario: int = Depends(obtener_id_usuario_logeado)):
     return _service.get_historial_paciente(id_usuario)
 
-# 5. GET: Resumen (Nuevo Endpoint)
+# 5. GET: Resumen
 @router.get("/resumen", response_model=ResumenDashboard)
 async def obtener_resumen(id_usuario: int = Depends(obtener_id_usuario_logeado)):
     return _service.get_resumen_paciente(id_usuario)

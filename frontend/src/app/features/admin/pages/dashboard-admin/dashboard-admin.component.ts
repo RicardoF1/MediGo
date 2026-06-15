@@ -28,9 +28,7 @@ export class DashboardAdminComponent implements OnInit {
     // Al instanciarse el Dashboard, sincronizamos la lista máster de la API de FastAPI
     this.adminService.cargarUsuarios();
     
-    // NOTA EXTRA OPTIONAL: Si en tu PacienteService tienes métodos para refrescar 
-    // citas o médicos desde el backend, puedes invocarlos aquí también:
-    // this.pacienteService.cargarCitas();
+
   }
   public usuariosFiltradosPorRolMedico = computed(() => {
   return this.adminService.usuariosMaster().filter(u => u.id_rol === 11);

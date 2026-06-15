@@ -30,7 +30,7 @@ class CitaRepository:
                 "idMedico": m["id_medico"],
                 "nombre": user_data.get("nombre", "Especialista"),
                 "avatar": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200",
-                # Simulamos turnos por ahora o puedes leerlos si tienes tabla de horarios
+                # Simulamos turnos 
                 "disponibilidad": ["08:00", "09:30", "11:00", "14:30", "16:00"] 
             })
         return medicos_mapeados
@@ -95,8 +95,6 @@ class CitaRepository:
         ]
     
     def obtener_resumen_dashboard(self, id_paciente: int) -> dict:
-        # Debemos filtrar por el nombre del estado en la tabla relacionada 'estados_cita'
-        # Supabase requiere hacer el join para filtrar por campos de tablas relacionadas
         
         # 1. Contar Activas (Pendientes o Confirmadas)
         activas = supabase.table("citas") \

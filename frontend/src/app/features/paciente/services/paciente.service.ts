@@ -46,7 +46,7 @@ export class PacienteService {
     return this.http.post<{ status: string; message: string; idCita: number }>(`${this.apiCitasUrl}/reservar`, payload);
   }
 
-  // === MÉTODOS EXISTENTES DE PERFIL Y AGENDA ===
+  // === MÉTODOS DE PERFIL Y AGENDA ===
 
   agregarCita(nuevaCita: Cita): void {
     this._citas.update(actuales => [...actuales, nuevaCita]);
@@ -64,7 +64,7 @@ export class PacienteService {
       .subscribe({
         next: () => {
           this._perfil.set({ ...datosActualizados });
-          alert('💾 Cambios de filiación guardados de manera permanente en Supabase.');
+          alert('Cambios de filiación guardados de manera permanente en Supabase.');
         },
         error: (err) => console.error('Error al actualizar filiación clínica:', err)
       });
@@ -74,7 +74,7 @@ export class PacienteService {
   cargarHistorialReal(): void {
     this.http.get<Cita[]>(`${this.apiCitasUrl}/historial`).subscribe({
       next: (data) => {
-        console.log('Datos recibidos del API:', data); // <-- ABRE LA CONSOLA DEL NAVEGADOR
+        console.log('Datos recibidos del API:', data);
         this._citas.set(data);
       },
       error: (err) => console.error('Error:', err)
