@@ -9,14 +9,12 @@ from src.schema.cita_schema import (
     HistorialCitaResponse, ResumenDashboard
 )
 from src.services.cita_service import CitaService
-from src.repository.cita_repository import CitaRepository
 from src.core.security import SecurityHandler
 
 router = APIRouter(prefix="/api/citas", tags=["Módulo Citas y Reservas"])
 
-# Instancias centralizadas
-_repo = CitaRepository()
-_service = CitaService() # Instancia única del servicio
+# Instancia única del servicio (El repositorio ya no se instancia aquí)
+_service = CitaService() 
 security_bearer = HTTPBearer()
 
 async def obtener_id_usuario_logeado(credentials = Depends(security_bearer)) -> int:
@@ -30,12 +28,14 @@ async def obtener_id_usuario_logeado(credentials = Depends(security_bearer)) -> 
 # 1. GET: Especialidades
 @router.get("/especialidades", response_model=List[EspecialidadLookup])
 async def obtener_especialidades():
-    return _repo.listar_especialidades()
+    # 🔄 CORREGIDO: Ahora pasa por el Service en lugar de ir directo al Repo
+    return _service.obtener_catalogo_especialidades()
 
 # 2. GET: Médicos por especialidad
 @router.get("/medicos/{especialidad_id}", response_model=List[MedicoLookup])
 async def obtener_medicos_por_especialidad(especialidad_id: int):
-    return _repo.listar_medicos_por_especialidad(especialidad_id)
+    # 🔄 CORREGIDO: Ahora pasa por el Service en lugar de ir directo al Repo
+    return _service.obtener_medicos_por_rama(especialidad_id)
 
 # 3. POST: Reservar
 @router.post("/reservar", response_model=ReservaCitaResponse)
